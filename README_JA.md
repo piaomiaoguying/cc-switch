@@ -2,7 +2,7 @@
 
 **[CC Switch](https://github.com/farion1231/cc-switch) の強化フォーク — AI CLI ツール向けに画像整流器とマルチプロバイダー視覚分析スキルを追加。**
 
-[English](README.md) | [中文](README_ZH.md) | 日本語
+[English](README_ZH.md) | [中文](README.md) | 日本語
 
 ---
 
