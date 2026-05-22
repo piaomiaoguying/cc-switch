@@ -248,24 +248,6 @@ impl Default for RectifierConfig {
     }
 }
 
-/// 请求体打印配置
-///
-/// 存储在 settings 表中，key = "dump_config"
-/// 开启后在终端打印完整的 API 请求体 JSON，用于调试
-#[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct DumpConfig {
-    /// 总开关：是否启用请求体打印（默认关闭）
-    #[serde(default)]
-    pub enabled: bool,
-}
-
-impl Default for DumpConfig {
-    fn default() -> Self {
-        Self { enabled: false }
-    }
-}
-
 /// 请求优化器配置
 ///
 /// 存储在 settings 表中，key = "optimizer_config"

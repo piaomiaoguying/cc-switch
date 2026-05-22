@@ -408,12 +408,6 @@
           "debug": "Detailed info including SSE stream and request/response",
           "trace": "All logs, most verbose"
         }
-      },
-      "dump": {
-        "title": "Request Body Dump",
-        "description": "Print the complete API request body JSON to the terminal for debugging",
-        "enabled": "Enable Request Body Dump",
-        "enabledDescription": "When enabled, the full request body (including messages/system/tools) of every proxy request will be printed as formatted JSON to the terminal. Note: this includes sensitive conversation content, use only for debugging."
       }
     },
     "language": "Language",

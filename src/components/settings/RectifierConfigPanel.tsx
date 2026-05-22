@@ -7,7 +7,6 @@ import {
   settingsApi,
   type RectifierConfig,
   type OptimizerConfig,
-  type DumpConfig,
 } from "@/lib/api/settings";
 
 export function RectifierConfigPanel() {
@@ -26,9 +25,6 @@ export function RectifierConfigPanel() {
     cacheTtl: "1h",
   });
   const [isLoading, setIsLoading] = useState(true);
-  const [dumpConfig, setDumpConfig] = useState<DumpConfig>({
-    enabled: false,
-  });
 
   useEffect(() => {
     settingsApi
@@ -40,10 +36,6 @@ export function RectifierConfigPanel() {
       .getOptimizerConfig()
       .then(setOptimizerConfig)
       .catch((e) => console.error("Failed to load optimizer config:", e));
-    settingsApi
-      .getDumpConfig()
-      .then(setDumpConfig)
-      .catch((e) => console.error("Failed to load dump config:", e));
   }, []);
 
   const handleChange = async (updates: Partial<RectifierConfig>) => {
@@ -67,18 +59,6 @@ export function RectifierConfigPanel() {
       console.error("Failed to save optimizer config:", e);
       toast.error(String(e));
       setOptimizerConfig(optimizerConfig);
-    }
-  };
-
-  const handleDumpChange = async (updates: Partial<DumpConfig>) => {
-    const newConfig = { ...dumpConfig, ...updates };
-    setDumpConfig(newConfig);
-    try {
-      await settingsApi.setDumpConfig(newConfig);
-    } catch (e) {
-      console.error("Failed to save dump config:", e);
-      toast.error(String(e));
-      setDumpConfig(dumpConfig);
     }
   };
 
@@ -271,29 +251,6 @@ export function RectifierConfigPanel() {
         </div>
       </div>
 
-      {/* 请求体打印 */}
-      <div className="border-t pt-6 mt-6">
-        <div className="space-y-1 mb-4">
-          <h3 className="text-sm font-medium">
-            {t("settings.advanced.dump.title")}
-          </h3>
-          <p className="text-xs text-muted-foreground">
-            {t("settings.advanced.dump.description")}
-          </p>
-        </div>
-        <div className="flex items-center justify-between">
-          <div className="space-y-0.5">
-            <Label>{t("settings.advanced.dump.enabled")}</Label>
-            <p className="text-xs text-muted-foreground">
-              {t("settings.advanced.dump.enabledDescription")}
-            </p>
-          </div>
-          <Switch
-            checked={dumpConfig.enabled}
-            onCheckedChange={(checked) => handleDumpChange({ enabled: checked })}
-          />
-        </div>
-      </div>
     </div>
   );
 }

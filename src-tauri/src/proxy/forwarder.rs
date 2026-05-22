@@ -19,7 +19,7 @@ use super::{
         normalize_thinking_type, rectify_anthropic_request, should_rectify_thinking_signature,
     },
     image_rectifier::rectify_images,
-    types::{CopilotOptimizerConfig, DumpConfig, OptimizerConfig, ProxyStatus, RectifierConfig},
+    types::{CopilotOptimizerConfig, OptimizerConfig, ProxyStatus, RectifierConfig},
     ProxyError,
 };
 use crate::commands::{CodexOAuthState, CopilotAuthState};
@@ -122,8 +122,6 @@ pub struct RequestForwarder {
     optimizer_config: OptimizerConfig,
     /// Copilot 优化器配置
     copilot_optimizer_config: CopilotOptimizerConfig,
-    /// 请求体打印配置
-    dump_config: DumpConfig,
     /// 非流式请求超时（秒）
     non_streaming_timeout: std::time::Duration,
     /// 流式请求响应头等待超时（秒）
@@ -154,7 +152,6 @@ impl RequestForwarder {
         rectifier_config: RectifierConfig,
         optimizer_config: OptimizerConfig,
         copilot_optimizer_config: CopilotOptimizerConfig,
-        dump_config: DumpConfig,
         max_retries: u32,
     ) -> Self {
         // max_retries 是「失败后重试次数」语义，attempt 上限 = retries + 1。
@@ -173,7 +170,6 @@ impl RequestForwarder {
             rectifier_config,
             optimizer_config,
             copilot_optimizer_config,
-            dump_config,
             non_streaming_timeout: std::time::Duration::from_secs(non_streaming_timeout),
             streaming_first_byte_timeout: std::time::Duration::from_secs(
                 streaming_first_byte_timeout,
@@ -422,9 +418,9 @@ impl RequestForwarder {
                 }
             }
 
-            // 打印整流后的请求体到终端（如果开启）
-            // 放在整流器之后，确保打印的是真正发送给上游的 body
-            if self.dump_config.enabled {
+            // Debug 模式下打印整流后的请求体到终端
+            #[cfg(debug_assertions)]
+            {
                 let header = format!(
                     "╔══════════════════════════════════════════════════════════════╗\n\
                      ║  [DUMP] {} Request Body (after rectifier)\n\
@@ -2466,7 +2462,6 @@ mod tests {
             rectifier_config: RectifierConfig::default(),
             optimizer_config: OptimizerConfig::default(),
             copilot_optimizer_config: CopilotOptimizerConfig::default(),
-            dump_config: DumpConfig::default(),
             non_streaming_timeout,
             streaming_first_byte_timeout,
             max_attempts: 1,
