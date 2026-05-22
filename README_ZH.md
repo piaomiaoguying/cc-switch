@@ -203,9 +203,9 @@ Scroll down in Router Settings to find the **Rectifier** section:
 
 ![Image Rectifier Switch](assets/screenshots/图片整流器开关示意图.png)
 
-### Done: Start a New Claude Code Instance
+### Done
 
-Once everything above is configured, start a new Claude Code instance. The model's network requests will now pass through the CC Switch proxy, which will intercept and modify the conversation data:
+Once everything above is configured, existing Claude Code instances should pick up the changes immediately. If it doesn't take effect, simply restart a new Claude Code instance. The model's network requests will now pass through the CC Switch proxy, which will intercept and modify the conversation data:
 
 > Image data (base64) that the model doesn't support is forcibly replaced with text content. The text guides the model to invoke your `image-analysis` Skill to complete the image understanding.
 

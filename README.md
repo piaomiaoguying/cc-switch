@@ -203,9 +203,9 @@ cp skills/image-analysis/scripts/config.example.json skills/image-analysis/scrip
 
 ![图片整流器开关](assets/screenshots/图片整流器开关示意图.png)
 
-### 完成：启动新的 Claude Code 实例
+### 完成
 
-以上配置完成后，启动一个新的 Claude Code 实例。此时模型的网络请求会经过 CC Switch 代理，CC Switch 会对会话数据进行拦截修改：
+以上配置完成后，正常的 Claude Code 实例通常会立即生效。如果老的实例没有生效，重新启动一个新的 Claude Code 实例即可。此时模型的网络请求会经过 CC Switch 代理，CC Switch 会对会话数据进行拦截修改：
 
 > 将消息中不支持的图片数据（base64）强制替换为文本内容，文本引导大模型去调用你的 `image-analysis` Skill 来完成图片理解。
 
