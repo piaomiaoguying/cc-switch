@@ -1,6 +1,8 @@
 # CC Switch ユーザーマニュアル
 
 > Claude Code / Claude Desktop / Codex / Gemini CLI / OpenCode / OpenClaw / Hermes オールインワンアシスタント
+>
+> **フォーク独自：** このフォークでは、画像整流器（プロキシレイヤーでの画像ブロック自動処理）と画像分析スキル（30以上のプロバイダー対応 Python CLI 視覚認識ツール）を追加しています。詳細は[メイン README](../../../README_JA.md)をご覧ください。
 
 ## 目次構成
 
@@ -34,7 +36,9 @@ CC Switch ユーザーマニュアル
 │   ├── 4.2 アプリケーション接管
 │   ├── 4.3 フェイルオーバー
 │   ├── 4.4 使用量統計
-│   └── 4.5 モデルテスト
+│   ├── 4.5 モデルテスト
+│   ├── 4.6 画像整流器
+│   └── 4.7 画像分析スキル
 │
 └── 5. よくある質問
     ├── 5.1 設定ファイルの説明
@@ -86,6 +90,18 @@ CC Switch ユーザーマニュアル
 | [4.4-usage.md](./4-proxy/4.4-usage.md) | 使用量統計、トレンドグラフ、料金設定 |
 | [4.5-model-test.md](./4-proxy/4.5-model-test.md) | モデルテスト、ヘルスチェック、レイテンシテスト |
 
+### 4.6 画像整流器
+
+| ファイル | 内容 |
+|------|------|
+| [4.6-image-rectifier.md](./4-proxy/4.6-image-rectifier.md) | 非ビジョンモデルのために base64 画像ブロックをテキストプロンプトに自動置換 |
+
+### 4.7 画像分析スキル
+
+| ファイル | 内容 |
+|------|------|
+| [4.7-image-analysis-skill.md](./4-proxy/4.7-image-analysis-skill.md) | 30以上の AI プロバイダー対応 Python CLI 画像認識ツール |
+
 ### 5. よくある質問
 
 | ファイル | 内容 |
@@ -130,5 +146,5 @@ CC Switch ユーザーマニュアル
 
 Issue や PR でドキュメントの改善にご協力ください：
 
-- [GitHub Issues](https://github.com/farion1231/cc-switch/issues)
-- [GitHub Repository](https://github.com/farion1231/cc-switch)
+- [GitHub Issues](https://github.com/piaomiaoguying/cc-switch/issues)
+- [GitHub Repository](https://github.com/piaomiaoguying/cc-switch)

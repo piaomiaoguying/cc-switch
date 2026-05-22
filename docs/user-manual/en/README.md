@@ -1,6 +1,8 @@
 # CC Switch User Manual
 
 > All-in-One Assistant for Claude Code / Claude Desktop / Codex / Gemini CLI / OpenCode / OpenClaw / Hermes
+>
+> **Fork-specific:** This fork adds an Image Rectifier (proxy-layer image block handling) and an Image Analysis Skill (Python CLI vision tool with 30+ providers). See [main README](../../../README.md) for details.
 
 ## Table of Contents
 
@@ -34,7 +36,9 @@ CC Switch User Manual
 │   ├── 4.2 App Takeover
 │   ├── 4.3 Failover
 │   ├── 4.4 Usage Statistics
-│   └── 4.5 Model Test
+│   ├── 4.5 Model Test
+│   ├── 4.6 Image Rectifier
+│   └── 4.7 Image Analysis Skill
 │
 └── 5. FAQ
     ├── 5.1 Configuration Files
@@ -86,6 +90,18 @@ CC Switch User Manual
 | [4.4-usage.md](./4-proxy/4.4-usage.md) | Usage statistics, trend charts, pricing configuration |
 | [4.5-model-test.md](./4-proxy/4.5-model-test.md) | Model test, health check, latency testing |
 
+### 4.6 Image Rectifier
+
+| File | Description |
+|------|-------------|
+| [4.6-image-rectifier.md](./4-proxy/4.6-image-rectifier.md) | Automatically replace base64 image blocks with text prompts for non-vision models |
+
+### 4.7 Image Analysis Skill
+
+| File | Description |
+|------|-------------|
+| [4.7-image-analysis-skill.md](./4-proxy/4.7-image-analysis-skill.md) | Python CLI tool with 30+ AI providers for image vision recognition |
+
 ### 5. FAQ
 
 | File | Description |
@@ -130,5 +146,5 @@ CC Switch User Manual
 
 Feel free to submit Issues or PRs to improve the documentation:
 
-- [GitHub Issues](https://github.com/farion1231/cc-switch/issues)
-- [GitHub Repository](https://github.com/farion1231/cc-switch)
+- [GitHub Issues](https://github.com/piaomiaoguying/cc-switch/issues)
+- [GitHub Repository](https://github.com/piaomiaoguying/cc-switch)

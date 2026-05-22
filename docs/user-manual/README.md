@@ -1,6 +1,8 @@
 # CC Switch User Manual / 用户手册 / ユーザーマニュアル
 
 > Claude Code / Codex / Gemini CLI / OpenCode / OpenClaw
+>
+> **Note:** This is an enhanced fork of CC Switch. For information about the unique features added in this fork (Image Rectifier and Image Analysis Skill), please refer to the main [README](../../README.md).
 
 ## Language / 语言 / 言語
 
@@ -18,5 +20,5 @@
 
 ## Links
 
-- [GitHub Issues](https://github.com/farion1231/cc-switch/issues)
-- [GitHub Repository](https://github.com/farion1231/cc-switch)
+- [GitHub Issues](https://github.com/piaomiaoguying/cc-switch/issues)
+- [GitHub Repository](https://github.com/piaomiaoguying/cc-switch)

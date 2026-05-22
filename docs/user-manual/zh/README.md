@@ -1,6 +1,8 @@
 # CC Switch 用户手册
 
 > Claude Code / Claude Desktop / Codex / Gemini CLI / OpenCode / OpenClaw / Hermes 全方位辅助工具
+>
+> **本分支独有：** 此分支新增了图片整流器（代理层图片块自动处理）和图片分析技能（支持 30+ Provider 的 Python 视觉识别 CLI）。详见[主 README](../../../README_ZH.md)。
 
 ## 目录结构
 
@@ -34,7 +36,9 @@
 │   ├── 4.2 应用接管
 │   ├── 4.3 故障转移
 │   ├── 4.4 用量统计
-│   └── 4.5 模型检查
+│   ├── 4.5 模型检查
+│   ├── 4.6 图片整流器
+│   └── 4.7 图片分析技能
 │
 └── 5. 常见问题
     ├── 5.1 配置文件说明
@@ -86,6 +90,18 @@
 | [4.4-usage.md](./4-proxy/4.4-usage.md) | 用量统计、趋势图表、定价配置 |
 | [4.5-model-test.md](./4-proxy/4.5-model-test.md) | 模型检查、健康检测、延迟测试 |
 
+### 4.6 图片整流器
+
+| 文件 | 内容 |
+|------|------|
+| [4.6-image-rectifier.md](./4-proxy/4.6-image-rectifier.md) | 在代理层自动替换 base64 图片块为文本提示，解决非视觉模型不兼容问题 |
+
+### 4.7 图片分析技能
+
+| 文件 | 内容 |
+|------|------|
+| [4.7-image-analysis-skill.md](./4-proxy/4.7-image-analysis-skill.md) | 支持 30+ AI Provider 的 Python 命令行图片视觉识别工具 |
+
 ### 5. 常见问题
 
 | 文件 | 内容 |
@@ -130,5 +146,5 @@
 
 欢迎提交 Issue 或 PR 改进文档：
 
-- [GitHub Issues](https://github.com/farion1231/cc-switch/issues)
-- [GitHub Repository](https://github.com/farion1231/cc-switch)
+- [GitHub Issues](https://github.com/piaomiaoguying/cc-switch/issues)
+- [GitHub Repository](https://github.com/piaomiaoguying/cc-switch)
