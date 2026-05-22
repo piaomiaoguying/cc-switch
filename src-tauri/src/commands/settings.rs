@@ -313,3 +313,24 @@ pub async fn set_log_config(
     );
     Ok(true)
 }
+
+/// 获取请求体打印配置
+#[tauri::command]
+pub async fn get_dump_config(
+    state: tauri::State<'_, crate::AppState>,
+) -> Result<crate::proxy::types::DumpConfig, String> {
+    state.db.get_dump_config().map_err(|e| e.to_string())
+}
+
+/// 设置请求体打印配置
+#[tauri::command]
+pub async fn set_dump_config(
+    state: tauri::State<'_, crate::AppState>,
+    config: crate::proxy::types::DumpConfig,
+) -> Result<bool, String> {
+    state
+        .db
+        .set_dump_config(&config)
+        .map_err(|e| e.to_string())?;
+    Ok(true)
+}

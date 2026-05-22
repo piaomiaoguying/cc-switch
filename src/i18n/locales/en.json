@@ -366,7 +366,13 @@
         "thinkingSignature": "Thinking Signature Rectification",
         "thinkingSignatureDescription": "When an Anthropic-type provider returns thinking signature incompatibility or illegal request errors, automatically removes incompatible thinking-related blocks and retries once with the same provider",
         "thinkingBudget": "Thinking Budget Rectification",
-        "thinkingBudgetDescription": "When an Anthropic-type provider returns budget_tokens constraint errors (such as at least 1024), automatically normalizes thinking to enabled, sets thinking budget to 32000, and raises max_tokens to 64000 if needed, then retries once"
+        "thinkingBudgetDescription": "When an Anthropic-type provider returns budget_tokens constraint errors (such as at least 1024), automatically normalizes thinking to enabled, sets thinking budget to 32000, and raises max_tokens to 64000 if needed, then retries once",
+        "imageRectifier": "Image Rectifier",
+        "imageRectifierDescription": "Detect and remove base64 image blocks from requests before sending, replacing them with text prompts. For models that don't support multimodal/vision capabilities",
+        "imageRectifierEnabled": "Enable Image Rectification",
+        "imageRectifierEnabledDescription": "When enabled, image blocks in requests will be replaced with text prompts, guiding the model to call the specified skill for image processing",
+        "imageRectifierSkill": "Skill Name",
+        "imageRectifierSkillDescription": "The English skill identifier that the model will be prompted to call when an image is removed"
       },
       "optimizer": {
         "title": "Bedrock Request Optimizer",
@@ -402,6 +408,12 @@
           "debug": "Detailed info including SSE stream and request/response",
           "trace": "All logs, most verbose"
         }
+      },
+      "dump": {
+        "title": "Request Body Dump",
+        "description": "Print the complete API request body JSON to the terminal for debugging",
+        "enabled": "Enable Request Body Dump",
+        "enabledDescription": "When enabled, the full request body (including messages/system/tools) of every proxy request will be printed as formatted JSON to the terminal. Note: this includes sensitive conversation content, use only for debugging."
       }
     },
     "language": "Language",

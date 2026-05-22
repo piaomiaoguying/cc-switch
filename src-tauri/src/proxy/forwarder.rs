@@ -18,7 +18,8 @@ use super::{
     thinking_rectifier::{
         normalize_thinking_type, rectify_anthropic_request, should_rectify_thinking_signature,
     },
-    types::{CopilotOptimizerConfig, OptimizerConfig, ProxyStatus, RectifierConfig},
+    image_rectifier::rectify_images,
+    types::{CopilotOptimizerConfig, DumpConfig, OptimizerConfig, ProxyStatus, RectifierConfig},
     ProxyError,
 };
 use crate::commands::{CodexOAuthState, CopilotAuthState};
@@ -33,6 +34,19 @@ use tauri::Manager;
 use tokio::sync::RwLock;
 
 const PROXY_AUTH_PLACEHOLDER: &str = "PROXY_MANAGED";
+
+/// 在合法的 UTF-8 字符边界处截断字符串，保证不会 panic
+fn truncate_at_char_boundary(s: &str, max_len: usize) -> usize {
+    if s.len() <= max_len || !s.is_char_boundary(max_len) {
+        // 向前找到最近的合法字符边界
+        (0..=max_len.saturating_sub(1))
+            .rev()
+            .find(|&i| s.is_char_boundary(i))
+            .unwrap_or(0)
+    } else {
+        max_len
+    }
+}
 
 pub struct ForwardResult {
     pub response: ProxyResponse,
@@ -108,6 +122,8 @@ pub struct RequestForwarder {
     optimizer_config: OptimizerConfig,
     /// Copilot 优化器配置
     copilot_optimizer_config: CopilotOptimizerConfig,
+    /// 请求体打印配置
+    dump_config: DumpConfig,
     /// 非流式请求超时（秒）
     non_streaming_timeout: std::time::Duration,
     /// 流式请求响应头等待超时（秒）
@@ -138,6 +154,7 @@ impl RequestForwarder {
         rectifier_config: RectifierConfig,
         optimizer_config: OptimizerConfig,
         copilot_optimizer_config: CopilotOptimizerConfig,
+        dump_config: DumpConfig,
         max_retries: u32,
     ) -> Self {
         // max_retries 是「失败后重试次数」语义，attempt 上限 = retries + 1。
@@ -156,6 +173,7 @@ impl RequestForwarder {
             rectifier_config,
             optimizer_config,
             copilot_optimizer_config,
+            dump_config,
             non_streaming_timeout: std::time::Duration::from_secs(non_streaming_timeout),
             streaming_first_byte_timeout: std::time::Duration::from_secs(
                 streaming_first_byte_timeout,
@@ -386,6 +404,57 @@ impl RequestForwarder {
                 } else {
                     body.clone()
                 };
+
+            // PRE-SEND 图片整流器：在请求发送前移除 image 块
+            // 用于不支持多模态/视觉理解的模型
+            if self.rectifier_config.enabled && self.rectifier_config.request_image_rectifier {
+                let img_result = rectify_images(
+                    &mut provider_body,
+                    &self.rectifier_config.image_rectifier_skill,
+                    true,
+                );
+                if img_result.applied {
+                    log::info!(
+                        "[{app_type_str}] [IMG-001] 图片整流器触发, 移除 {} image blocks, {} chars",
+                        img_result.removed_image_blocks,
+                        img_result.removed_data_chars
+                    );
+                }
+            }
+
+            // 打印整流后的请求体到终端（如果开启）
+            // 放在整流器之后，确保打印的是真正发送给上游的 body
+            if self.dump_config.enabled {
+                let header = format!(
+                    "╔══════════════════════════════════════════════════════════════╗\n\
+                     ║  [DUMP] {} Request Body (after rectifier)\n\
+                     ╠══════════════════════════════════════════════════════════════╣\n\
+                     ║  Endpoint: {}\n\
+                     ║  App: {}\n\
+                     ║  Provider: {} (id={})\n\
+                     ╚══════════════════════════════════════════════════════════════╝",
+                    app_type_str.to_uppercase(),
+                    endpoint,
+                    app_type_str,
+                    provider.name,
+                    provider.id,
+                );
+                println!("{header}");
+                let raw = serde_json::to_string_pretty(&provider_body)
+                    .unwrap_or_else(|e| format!("<序列化失败: {e}>"));
+                for line in raw.lines() {
+                    if line.len() <= 200 {
+                        println!("{line}");
+                    } else {
+                        let truncate_at = truncate_at_char_boundary(line, 200);
+                        println!(
+                            "{}...<截断，原行长度 {} 字符>",
+                            &line[..truncate_at],
+                            line.len()
+                        );
+                    }
+                }
+            }
 
             attempted_providers += 1;
 
@@ -2397,6 +2466,7 @@ mod tests {
             rectifier_config: RectifierConfig::default(),
             optimizer_config: OptimizerConfig::default(),
             copilot_optimizer_config: CopilotOptimizerConfig::default(),
+            dump_config: DumpConfig::default(),
             non_streaming_timeout,
             streaming_first_byte_timeout,
             max_attempts: 1,

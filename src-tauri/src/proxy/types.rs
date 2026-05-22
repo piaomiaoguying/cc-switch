@@ -213,6 +213,19 @@ pub struct RectifierConfig {
     /// 处理错误：budget_tokens + thinking 相关约束
     #[serde(default = "default_true")]
     pub request_thinking_budget: bool,
+    /// 请求整流：启用图片整流器（默认关闭）
+    ///
+    /// 在请求发送前检测并移除 image 类型的 base64 图片块，替换为文本提示。
+    /// 用于不支持多模态/视觉理解的模型。
+    #[serde(default)]
+    pub request_image_rectifier: bool,
+    /// 图片整流器使用的 skill 名称
+    #[serde(default = "default_image_skill")]
+    pub image_rectifier_skill: String,
+}
+
+fn default_image_skill() -> String {
+    "image-analyzer".to_string()
 }
 
 fn default_true() -> bool {
@@ -229,7 +242,27 @@ impl Default for RectifierConfig {
             enabled: true,
             request_thinking_signature: true,
             request_thinking_budget: true,
+            request_image_rectifier: false,
+            image_rectifier_skill: "image-analyzer".to_string(),
         }
+    }
+}
+
+/// 请求体打印配置
+///
+/// 存储在 settings 表中，key = "dump_config"
+/// 开启后在终端打印完整的 API 请求体 JSON，用于调试
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct DumpConfig {
+    /// 总开关：是否启用请求体打印（默认关闭）
+    #[serde(default)]
+    pub enabled: bool,
+}
+
+impl Default for DumpConfig {
+    fn default() -> Self {
+        Self { enabled: false }
     }
 }
 
@@ -385,6 +418,14 @@ mod tests {
         assert!(
             config.request_thinking_budget,
             "thinking budget 整流器默认应为 true"
+        );
+        assert!(
+            !config.request_image_rectifier,
+            "图片整流器默认应为 false"
+        );
+        assert_eq!(
+            config.image_rectifier_skill, "image-analyzer",
+            "图片整流器 skill 默认应为 image-analyzer"
         );
     }
 

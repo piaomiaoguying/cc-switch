@@ -366,7 +366,13 @@
         "thinkingSignature": "Thinking 签名整流",
         "thinkingSignatureDescription": "当 Anthropic 类型供应商返回 thinking 签名不兼容或非法请求等错误时，自动移除不兼容的 thinking 相关块并对同一供应商重试一次",
         "thinkingBudget": "Thinking Budget 整流",
-        "thinkingBudgetDescription": "当 Anthropic 类型供应商返回 budget_tokens 约束错误（如至少 1024）时，自动将 thinking 规范为 enabled 并将 budget 设为 32000，同时在需要时将 max_tokens 设为 64000，然后重试一次"
+        "thinkingBudgetDescription": "当 Anthropic 类型供应商返回 budget_tokens 约束错误（如至少 1024）时，自动将 thinking 规范为 enabled 并将 budget 设为 32000，同时在需要时将 max_tokens 设为 64000，然后重试一次",
+        "imageRectifier": "图片整流器",
+        "imageRectifierDescription": "在请求发送前检测并移除 base64 图片块，替换为文本提示。用于不支持多模态/视觉理解的模型",
+        "imageRectifierEnabled": "启用图片整流",
+        "imageRectifierEnabledDescription": "开启后，请求中的 image 类型块会被替换为文本提示，引导模型调用指定 skill 处理图片",
+        "imageRectifierSkill": "Skill 名称",
+        "imageRectifierSkillDescription": "图片被移除后，提示模型调用的 skill 英文标识名"
       },
       "optimizer": {
         "title": "Bedrock 请求优化器",
@@ -402,6 +408,12 @@
           "debug": "详细信息，包含 SSE 流和请求/响应详情",
           "trace": "全部日志，最详细"
         }
+      },
+      "dump": {
+        "title": "请求体打印",
+        "description": "在终端打印完整的 API 请求体 JSON 内容，方便调试",
+        "enabled": "启用请求体打印",
+        "enabledDescription": "开启后，每次代理请求的完整请求体（包含 messages / system / tools 等全部字段）都会以格式化 JSON 打印到终端。注意：这会包含敏感的对话内容，仅在调试时使用。"
       }
     },
     "language": "界面语言",

@@ -324,4 +324,22 @@ impl Database {
             .map_err(|e| AppError::Database(format!("序列化日志配置失败: {e}")))?;
         self.set_setting("log_config", &json)
     }
+
+    // --- 请求体打印配置 ---
+
+    /// 获取请求体打印配置
+    pub fn get_dump_config(&self) -> Result<crate::proxy::types::DumpConfig, AppError> {
+        match self.get_setting("dump_config")? {
+            Some(json) => serde_json::from_str(&json)
+                .map_err(|e| AppError::Database(format!("解析请求体打印配置失败: {e}"))),
+            None => Ok(crate::proxy::types::DumpConfig::default()),
+        }
+    }
+
+    /// 更新请求体打印配置
+    pub fn set_dump_config(&self, config: &crate::proxy::types::DumpConfig) -> Result<(), AppError> {
+        let json = serde_json::to_string(config)
+            .map_err(|e| AppError::Database(format!("序列化请求体打印配置失败: {e}")))?;
+        self.set_setting("dump_config", &json)
+    }
 }

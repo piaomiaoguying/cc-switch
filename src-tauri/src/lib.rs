@@ -1083,6 +1083,8 @@ pub fn run() {
             commands::set_copilot_optimizer_config,
             commands::get_log_config,
             commands::set_log_config,
+            commands::get_dump_config,
+            commands::set_dump_config,
             commands::restart_app,
             commands::check_for_updates,
             commands::is_portable_mode,

@@ -7,6 +7,7 @@ import {
   settingsApi,
   type RectifierConfig,
   type OptimizerConfig,
+  type DumpConfig,
 } from "@/lib/api/settings";
 
 export function RectifierConfigPanel() {
@@ -15,6 +16,8 @@ export function RectifierConfigPanel() {
     enabled: true,
     requestThinkingSignature: true,
     requestThinkingBudget: true,
+    requestImageRectifier: false,
+    imageRectifierSkill: "image-analyzer",
   });
   const [optimizerConfig, setOptimizerConfig] = useState<OptimizerConfig>({
     enabled: false,
@@ -23,6 +26,9 @@ export function RectifierConfigPanel() {
     cacheTtl: "1h",
   });
   const [isLoading, setIsLoading] = useState(true);
+  const [dumpConfig, setDumpConfig] = useState<DumpConfig>({
+    enabled: false,
+  });
 
   useEffect(() => {
     settingsApi
@@ -34,6 +40,10 @@ export function RectifierConfigPanel() {
       .getOptimizerConfig()
       .then(setOptimizerConfig)
       .catch((e) => console.error("Failed to load optimizer config:", e));
+    settingsApi
+      .getDumpConfig()
+      .then(setDumpConfig)
+      .catch((e) => console.error("Failed to load dump config:", e));
   }, []);
 
   const handleChange = async (updates: Partial<RectifierConfig>) => {
@@ -57,6 +67,18 @@ export function RectifierConfigPanel() {
       console.error("Failed to save optimizer config:", e);
       toast.error(String(e));
       setOptimizerConfig(optimizerConfig);
+    }
+  };
+
+  const handleDumpChange = async (updates: Partial<DumpConfig>) => {
+    const newConfig = { ...dumpConfig, ...updates };
+    setDumpConfig(newConfig);
+    try {
+      await settingsApi.setDumpConfig(newConfig);
+    } catch (e) {
+      console.error("Failed to save dump config:", e);
+      toast.error(String(e));
+      setDumpConfig(dumpConfig);
     }
   };
 
@@ -198,6 +220,78 @@ export function RectifierConfigPanel() {
               </div>
             )}
           </div>
+        </div>
+      </div>
+
+      {/* 图片整流器 */}
+      <div className="border-t pt-6 mt-6">
+        <div className="space-y-1 mb-4">
+          <h3 className="text-sm font-medium">
+            {t("settings.advanced.rectifier.imageRectifier")}
+          </h3>
+          <p className="text-xs text-muted-foreground">
+            {t("settings.advanced.rectifier.imageRectifierDescription")}
+          </p>
+        </div>
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <div className="space-y-0.5">
+              <Label>{t("settings.advanced.rectifier.imageRectifierEnabled")}</Label>
+              <p className="text-xs text-muted-foreground">
+                {t("settings.advanced.rectifier.imageRectifierEnabledDescription")}
+              </p>
+            </div>
+            <Switch
+              checked={config.requestImageRectifier}
+              disabled={!config.enabled}
+              onCheckedChange={(checked) =>
+                handleChange({ requestImageRectifier: checked })
+              }
+            />
+          </div>
+
+          <div className="flex items-center justify-between pl-4">
+            <div className="space-y-0.5 flex-1 mr-4">
+              <Label>{t("settings.advanced.rectifier.imageRectifierSkill")}</Label>
+              <p className="text-xs text-muted-foreground">
+                {t("settings.advanced.rectifier.imageRectifierSkillDescription")}
+              </p>
+            </div>
+            <input
+              type="text"
+              className="h-9 w-48 rounded-md border border-input bg-background px-3 text-sm"
+              value={config.imageRectifierSkill}
+              disabled={!config.enabled}
+              onChange={(e) =>
+                handleChange({ imageRectifierSkill: e.target.value })
+              }
+              placeholder="image-analyzer"
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* 请求体打印 */}
+      <div className="border-t pt-6 mt-6">
+        <div className="space-y-1 mb-4">
+          <h3 className="text-sm font-medium">
+            {t("settings.advanced.dump.title")}
+          </h3>
+          <p className="text-xs text-muted-foreground">
+            {t("settings.advanced.dump.description")}
+          </p>
+        </div>
+        <div className="flex items-center justify-between">
+          <div className="space-y-0.5">
+            <Label>{t("settings.advanced.dump.enabled")}</Label>
+            <p className="text-xs text-muted-foreground">
+              {t("settings.advanced.dump.enabledDescription")}
+            </p>
+          </div>
+          <Switch
+            checked={dumpConfig.enabled}
+            onCheckedChange={(checked) => handleDumpChange({ enabled: checked })}
+          />
         </div>
       </div>
     </div>
