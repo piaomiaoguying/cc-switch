@@ -119,6 +119,15 @@ A convenience script that wraps `pnpm tauri dev` / `pnpm tauri build`:
 
 Includes pre-set `CARGO_HTTP_PROXY` for developers behind firewalls.
 
+> **Proxy address note:** The proxy address `http://127.0.0.1:7890` pre-configured on lines 10-11 of `dev.sh` is an example value. Users in mainland China usually need a proxy to pull Rust dependencies. Modify the following two lines in `dev.sh` to match your local proxy's port:
+>
+> ```bash
+> export CARGO_HTTP_PROXY=http://127.0.0.1:7890
+> export CARGO_HTTPS_PROXY=http://127.0.0.1:7890
+> ```
+>
+> Replace `7890` with your local proxy's actual port (e.g., Clash default: 7890, V2Ray default: 10809, or custom).
+
 ---
 
 ## Installation

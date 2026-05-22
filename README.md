@@ -117,7 +117,16 @@
 ./dev.sh build   # Release 编译
 ```
 
-预置 `CARGO_HTTP_PROXY`，方便国内网络环境下编译 Rust 依赖。
+预置了 `CARGO_HTTP_PROXY`，方便国内网络环境下编译 Rust 依赖。
+
+> **注意代理地址：** `dev.sh` 第 10-11 行预置的代理地址 `http://127.0.0.1:7890` 是示例值，国内用户通常需要代理才能顺利拉取 Rust 依赖。请根据自己本地代理软件的端口号修改 `dev.sh` 中的以下两行：
+>
+> ```bash
+> export CARGO_HTTP_PROXY=http://127.0.0.1:7890
+> export CARGO_HTTPS_PROXY=http://127.0.0.1:7890
+> ```
+>
+> 将 `7890` 替换为你本地代理的实际端口号（常见如 Clash 的 7890、V2Ray 的 10809、手动搭建的可自行设置）。
 
 ---
 
