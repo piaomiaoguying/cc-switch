@@ -1,0 +1,175 @@
+{
+  "default_model": "zhipu",
+  "providers": {
+    "volc-seed-2-0-pro": {
+      "api_key": "your-api-key",
+      "model": "doubao-seed-2-0-pro-260215",
+      "base_url": "https://ark.cn-beijing.volces.com/api/v3/chat/completions"
+    },
+    "volc-seed-2-0-lite": {
+      "api_key": "your-api-key",
+      "model": "doubao-seed-2-0-lite-260428",
+      "base_url": "https://ark.cn-beijing.volces.com/api/v3/chat/completions"
+    },
+    "volc-seed-2-0-mini": {
+      "api_key": "your-api-key",
+      "model": "doubao-seed-2-0-mini-260428",
+      "base_url": "https://ark.cn-beijing.volces.com/api/v3/chat/completions"
+    },
+    "volc-code-preview": {
+      "api_key": "your-api-key",
+      "model": "doubao-seed-2-0-code-preview-260215",
+      "base_url": "https://ark.cn-beijing.volces.com/api/v3/chat/completions"
+    },
+    "volc-seed-1-6-vision": {
+      "api_key": "your-api-key",
+      "model": "doubao-seed-1-6-vision-250815",
+      "base_url": "https://ark.cn-beijing.volces.com/api/v3/chat/completions"
+    },
+    "volc-1-5-vision": {
+      "api_key": "your-api-key",
+      "model": "doubao-1-5-vision-pro-32k-250115",
+      "base_url": "https://ark.cn-beijing.volces.com/api/v3/chat/completions"
+    },
+    "volc-seed-1-6-flash": {
+      "api_key": "your-api-key",
+      "model": "doubao-seed-1-6-flash-250828",
+      "base_url": "https://ark.cn-beijing.volces.com/api/v3/chat/completions"
+    },
+    "volc-seed-1-6": {
+      "api_key": "your-api-key",
+      "model": "doubao-seed-1-6-251015",
+      "base_url": "https://ark.cn-beijing.volces.com/api/v3/chat/completions"
+    },
+    "volc-seed-1-8": {
+      "api_key": "your-api-key",
+      "model": "doubao-seed-1-8-251228",
+      "base_url": "https://ark.cn-beijing.volces.com/api/v3/chat/completions"
+    },
+    "sf-35b-1": {
+      "api_key": "your-api-key",
+      "model": "Qwen/Qwen3.6-35B-A3B",
+      "base_url": "https://api.siliconflow.cn/v1/chat/completions"
+    },
+    "sf-35b-2": {
+      "api_key": "your-api-key",
+      "model": "Qwen/Qwen3.6-35B-A3B",
+      "base_url": "https://api.siliconflow.cn/v1/chat/completions"
+    },
+    "sf-27b-1": {
+      "api_key": "your-api-key",
+      "model": "Qwen/Qwen3.6-27B",
+      "base_url": "https://api.siliconflow.cn/v1/chat/completions"
+    },
+    "sf-27b-2": {
+      "api_key": "your-api-key",
+      "model": "Qwen/Qwen3.6-27B",
+      "base_url": "https://api.siliconflow.cn/v1/chat/completions"
+    },
+    "ali-qwen3.5-122b": {
+      "api_key": "your-api-key",
+      "model": "qwen3.5-122b-a10b",
+      "base_url": "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions"
+    },
+    "ali-qwen3.6-plus-0402": {
+      "api_key": "your-api-key",
+      "model": "qwen3.6-plus-2026-04-02",
+      "base_url": "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions"
+    },
+    "ali-qwen3.6-plus": {
+      "api_key": "your-api-key",
+      "model": "qwen3.6-plus",
+      "base_url": "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions"
+    },
+    "ali-qwen3.5-plus": {
+      "api_key": "your-api-key",
+      "model": "qwen3.5-plus-2026-04-20",
+      "base_url": "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions"
+    },
+    "ali-qwen3.5-omni-plus-0315": {
+      "api_key": "your-api-key",
+      "model": "qwen3.5-omni-plus-2026-03-15",
+      "base_url": "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions"
+    },
+    "ali-qwen3.5-omni-plus": {
+      "api_key": "your-api-key",
+      "model": "qwen3.5-omni-plus",
+      "base_url": "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions"
+    },
+    "ali-qwen3.5-omni-flash-0315": {
+      "api_key": "your-api-key",
+      "model": "qwen3.5-omni-flash-2026-03-15",
+      "base_url": "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions"
+    },
+    "ali-qwen3.5-omni-flash": {
+      "api_key": "your-api-key",
+      "model": "qwen3.5-omni-flash",
+      "base_url": "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions"
+    },
+    "ali-qwen3.6-35b": {
+      "api_key": "your-api-key",
+      "model": "qwen3.6-35b-a3b",
+      "base_url": "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions"
+    },
+    "ali-qwen3.5-35b": {
+      "api_key": "your-api-key",
+      "model": "qwen3.5-35b-a3b",
+      "base_url": "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions"
+    },
+    "ali-qwen3.6-27b": {
+      "api_key": "your-api-key",
+      "model": "qwen3.6-27b",
+      "base_url": "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions"
+    },
+    "ali-qwen3.5-27b": {
+      "api_key": "your-api-key",
+      "model": "qwen3.5-27b",
+      "base_url": "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions"
+    },
+    "ali-qwen3.6-flash-0416": {
+      "api_key": "your-api-key",
+      "model": "qwen3.6-flash-2026-04-16",
+      "base_url": "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions"
+    },
+    "ali-qwen3.6-flash": {
+      "api_key": "your-api-key",
+      "model": "qwen3.6-flash",
+      "base_url": "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions"
+    },
+    "ali-qwen3.5-flash": {
+      "api_key": "your-api-key",
+      "model": "qwen3.5-flash",
+      "base_url": "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions"
+    },
+    "ali-qwen3.5-flash-0223": {
+      "api_key": "your-api-key",
+      "model": "qwen3.5-flash-2026-02-23",
+      "base_url": "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions"
+    },
+    "ali-gui-plus": {
+      "api_key": "your-api-key",
+      "model": "gui-plus-2026-02-26",
+      "base_url": "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions"
+    },
+    "ali-kimi-k2.6": {
+      "api_key": "your-api-key",
+      "model": "kimi-k2.6",
+      "base_url": "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions"
+    },
+    "ali-minimax-m2.5": {
+      "api_key": "your-api-key",
+      "model": "MiniMax-M2.5",
+      "base_url": "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions"
+    },
+    "sensenova": {
+      "api_key": "your-api-key",
+      "model": "sensenova-6.7-flash-lite",
+      "base_url": "https://token.sensenova.cn/v1/chat/completions"
+    },
+    "zhipu": {
+      "api_key": "your-api-key",
+      "model": "glm-4.6v-flash",
+      "base_url": "https://open.bigmodel.cn/api/paas/v4/chat/completions"
+    }
+  }
+}
