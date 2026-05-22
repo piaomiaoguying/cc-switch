@@ -18,6 +18,8 @@
 
 结果是什么？Ctrl+V 粘贴一张截图，模型收到 base64 图片数据，直接报错或胡言乱语。**整段对话就此腐烂，无法继续。**
 
+![关闭图片整流器时，Claude Code + DeepSeek 对话直接腐烂](assets/screenshots/claudecode+DeepSeek关闭图片整流器运行示意图.png)
+
 更糟的是，Debug 时我们几乎不会把截图先保存到本地再传 — 直接截图 → 粘贴到剪贴板 → Ctrl+V 才是最自然的工作流。传统方案只适用于"先保存为文件，再给路径"的场景，跟实际使用习惯完全错位。
 
 ### 本项目的解法
@@ -30,6 +32,18 @@
 | 给定图片文件路径 | ⚠️ `CLAUDE.md` 规则勉强可用，但不同 CLI 行为不一致 | ✅ 整流器统一拦截，不依赖 MD 文件规则 |
 | OpenCode 粘贴剪贴板图片 | ❌ OpenCode 不生成临时文件，路径都拿不到 | ✅ Skill 脚本自动检测：有路径读文件，没路径直接从剪贴板读取 |
 | 多 Provider 切换 | ❌ 单个模型挂了就挂了 | ✅ Fallback 机制，30+ Provider 自动切换 |
+
+> **关闭整流器：** Claude Code + DeepSeek，Ctrl+V 粘贴图片后对话直接腐烂
+
+![claudecode+DeepSeek关闭图片整流器运行示意图](assets/screenshots/claudecode+DeepSeek关闭图片整流器运行示意图.png)
+
+> **启用整流器：** Claude Code + DeepSeek，图片被正常拦截并引导调用 Skill
+
+![claudecode+DeepSeek启用图片整流器运行示意图](assets/screenshots/claudecode+DeepSeek启用图片整流器运行示意图.png)
+
+> **OpenCode + DeepSeek：** Skill 检测到无临时文件，自动从剪贴板读取
+
+![opencode+DeepSeek运行示意图](assets/screenshots/opencode+DeepSeek运行示意图.png)
 
 ### 两层防线的分工
 
@@ -62,6 +76,8 @@
 - 与下方的图片分析技能无缝配合
 
 **配置方式：** 代理设置 → 高级整流器 → 图片整流器。打开开关，可按需修改 skill 名称。
+
+![图片整流器开关](assets/screenshots/图片整流器开关示意图.png)
 
 ---
 
@@ -127,7 +143,7 @@ python skills/image-analysis/scripts/vision.py analyze \
 
 ## 安装
 
-从[原 CC Switch 的 Releases 页面](https://github.com/farion1231/cc-switch/releases)下载最新版本，或从源码编译：
+从源码编译：
 
 ```bash
 git clone https://github.com/piaomiaoguying/cc-switch.git
