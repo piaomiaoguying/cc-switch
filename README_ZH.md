@@ -174,6 +174,14 @@ MUST use the image-analysis skill to analyze images
 When the model indicates it does not support direct image input, automatically invoke the image-analysis skill to analyze the image
 ```
 
+> 💡 **OpenCode Users**: OpenCode reads its global instructions from `~/.config/opencode/AGENTS.md` instead of `CLAUDE.md`. For convenience, you can create a symlink:
+>
+> ```bash
+> ln -sf ~/.claude/CLAUDE.md ~/.config/opencode/AGENTS.md
+> ```
+>
+> Once the symlink is set up, you only need to manage Claude's `CLAUDE.md` via CC Switch's **Prompts** panel — OpenCode will pick up changes automatically.
+
 ### Step 3: Import the Skill into Your AI CLI
 
 It's recommended to manage Skills through CC Switch rather than manually copying folders:

@@ -174,6 +174,14 @@ cp skills/image-analysis/scripts/config.example.json skills/image-analysis/scrip
 モデルが直接画像入力に対応していない場合は、自動的に image-analysis スキルを呼び出して画像を分析してください
 ```
 
+> 💡 **OpenCode ユーザーへの注意**：OpenCode のグローバル命令は `~/.config/opencode/AGENTS.md` ファイルから読み込まれます（`CLAUDE.md` ではありません）。手間を省くためにシンボリックリンクを作成できます：
+>
+> ```bash
+> ln -sf ~/.claude/CLAUDE.md ~/.config/opencode/AGENTS.md
+> ```
+>
+> シンボリックリンクを作成すれば、CC Switch の **Prompts プロンプト管理** で Claude の `CLAUDE.md` だけを管理すれば、OpenCode にも自動的に反映されます。
+
 ### ステップ 3：Skill を AI CLI にインポート
 
 手動でフォルダをコピーするよりも、CC Switch を通じて Skill を管理することをお勧めします：

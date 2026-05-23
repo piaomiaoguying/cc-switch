@@ -174,6 +174,14 @@ cp skills/image-analysis/scripts/config.example.json skills/image-analysis/scrip
 当模型返回不支持直接接收图片输入时，自动调用 image-analysis 这个 skill 来分析图片
 ```
 
+> 💡 **OpenCode 用户注意**：OpenCode 的全局指令走的是 `~/.config/opencode/AGENTS.md` 文件，而非 `CLAUDE.md`。图省事可以直接建立软链接：
+>
+> ```bash
+> ln -sf ~/.claude/CLAUDE.md ~/.config/opencode/AGENTS.md
+> ```
+>
+> 建立软链接后，在 CC Switch 的 **Prompts 提示词管理** 中统一管理 Claude 的 `CLAUDE.md` 即可，OpenCode 会自动同步生效。
+
 ### 第三步：导入 Skill 到 AI CLI
 
 推荐通过 CC Switch 统一管理 Skill，避免手动复制文件夹：
