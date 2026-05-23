@@ -41,6 +41,10 @@
 
 ![claudecode+DeepSeek启用图片整流器运行示意图](assets/screenshots/claudecode+DeepSeek启用图片整流器运行示意图.png)
 
+> **一次粘贴多张图片：** Claude Code + DeepSeek，支持一次性粘贴多张剪贴板图片
+
+![claudecode支持一次粘贴多张剪贴板图片](assets/screenshots/claudecode支持一次粘贴多张剪贴板图片.png)
+
 > **OpenCode + DeepSeek：** Skill 检测到无临时文件，自动从剪贴板读取
 
 ![opencode+DeepSeek运行示意图](assets/screenshots/opencode+DeepSeek运行示意图.png)

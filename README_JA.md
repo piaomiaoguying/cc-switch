@@ -41,6 +41,10 @@
 
 ![claudecode+DeepSeek启用图片整流器运行示意图](assets/screenshots/claudecode+DeepSeek启用图片整流器运行示意图.png)
 
+> **複数画像の同時貼り付け：** Claude Code + DeepSeek、複数のクリップボード画像を一度に貼り付け可能
+
+![Claude Codeで複数のクリップボード画像を一度に貼り付け](assets/screenshots/claudecode支持一次粘贴多张剪贴板图片.png)
+
 > **OpenCode + DeepSeek：** Skill が一時ファイルなしを検出し、クリップボードから直接読み取り
 
 ![opencode+DeepSeek运行示意图](assets/screenshots/opencode+DeepSeek运行示意图.png)

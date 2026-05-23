@@ -41,6 +41,10 @@ Worse still, during debugging sessions we almost never bother saving screenshots
 
 ![claudecode+DeepSeek启用图片整流器运行示意图](assets/screenshots/claudecode+DeepSeek启用图片整流器运行示意图.png)
 
+> **Pasting multiple images at once:** Claude Code + DeepSeek, supports pasting multiple clipboard images in a single action
+
+![Claude Code supports pasting multiple clipboard images at once](assets/screenshots/claudecode支持一次粘贴多张剪贴板图片.png)
+
 > **OpenCode + DeepSeek:** Skill detects no temp file, reads directly from clipboard
 
 ![opencode+DeepSeek运行示意图](assets/screenshots/opencode+DeepSeek运行示意图.png)
