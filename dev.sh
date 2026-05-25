@@ -12,6 +12,8 @@ export CARGO_HTTPS_PROXY=http://127.0.0.1:7890
 
 MODE="${1:-debug}"
 
+pnpm install --frozen-lockfile
+
 case "$MODE" in
   debug|d)
     echo "=== CC Switch 开发模式启动 (DEBUG) ==="
