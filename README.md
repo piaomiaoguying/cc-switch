@@ -2,10 +2,6 @@
 
 **[CC Switch](https://github.com/farion1231/cc-switch) 的增强分支 — 为 AI CLI 工具新增图片整流器和多 Provider 视觉分析技能。**
 
-[English](README_ZH.md) | 中文 | [日本語](README_JA.md)
-
----
-
 ## 为什么需要本项目？
 
 **AI CLI 工具 + 第三方模型 = 图片理解真空地带。** 这是 Claude Code、OpenCode 等工具搭配 DeepSeek 等不支持多模态的模型时，最让人头疼的问题。
