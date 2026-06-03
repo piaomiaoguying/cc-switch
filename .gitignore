@@ -32,3 +32,4 @@ CODEBUDDY.md
 mainWindow.js
 skills/image-analysis/scripts/__pycache__/vision_manager.cpython-314.pyc
 skills/image-analysis/scripts/config.json
+skills/image-analysis/scripts/.skill_config
