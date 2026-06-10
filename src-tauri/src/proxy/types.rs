@@ -226,10 +226,23 @@ pub struct RectifierConfig {
     /// 避免内置列表把多模态模型误判成 text-only 而静默剥图。
     #[serde(default = "default_true")]
     pub request_media_heuristic: bool,
+    /// 请求整流：图片整流器（默认开启）
+    ///
+    /// 在请求发送前将 image 块替换为文本提示，引导模型调用指定 skill 处理图片。
+    /// 适用于不支持多模态/视觉理解的模型。
+    #[serde(default = "default_true")]
+    pub request_image_rectifier: bool,
+    /// 图片整流器使用的 skill 名称
+    #[serde(default = "default_image_rectifier_skill")]
+    pub image_rectifier_skill: String,
 }
 
 fn default_true() -> bool {
     true
+}
+
+fn default_image_rectifier_skill() -> String {
+    "image-analysis".to_string()
 }
 
 fn default_log_level() -> String {
@@ -244,6 +257,8 @@ impl Default for RectifierConfig {
             request_thinking_budget: true,
             request_media_fallback: true,
             request_media_heuristic: true,
+            request_image_rectifier: true,
+            image_rectifier_skill: default_image_rectifier_skill(),
         }
     }
 }

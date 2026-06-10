@@ -371,7 +371,11 @@
         "mediaFallback": "非対応画像フォールバック",
         "mediaFallbackDescription": "プロバイダーが画像入力に対応していない場合（テキストのみの能力が宣言されている、または上流が画像非対応エラーを返した場合）、画像ブロックを [Unsupported Image] マーカーに自動置換し、会話を中断させません",
         "mediaHeuristic": "ヒューリスティックなテキスト専用モデル判定",
-        "mediaHeuristicDescription": "送信前に内蔵モデル名リストに基づいて画像を予測的に削除します。オフにすると「宣言済みテキスト専用」と「上流エラー時のフォールバック」のみが残り、内蔵リストがマルチモーダルモデルをテキスト専用と誤判定して画像を静かに削除するのを防ぎます"
+        "mediaHeuristicDescription": "送信前に内蔵モデル名リストに基づいて画像を予測的に削除します。オフにすると「宣言済みテキスト専用」と「上流エラー時のフォールバック」のみが残り、内蔵リストがマルチモーダルモデルをテキスト専用と誤判定して画像を静かに削除するのを防ぎます",
+        "imageRectifier": "画像整流器",
+        "imageRectifierDescription": "送信前に画像ブロックをテキストプロンプトに置き換え、モデルに指定したSkillを呼び出すよう促します。マルチモーダル非対応モデルのエラーを修正します",
+        "imageRectifierSkill": "Skill名",
+        "imageRectifierSkillDescription": "画像整流がトリガーされたときにプロンプトされるSkill名"
       },
       "optimizer": {
         "title": "Bedrock リクエストオプティマイザー",

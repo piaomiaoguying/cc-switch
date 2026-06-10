@@ -371,7 +371,11 @@
         "mediaFallback": "Unsupported Image Fallback",
         "mediaFallbackDescription": "When a provider does not support image input (it declares text-only capability, or the upstream returns an unsupported-image error), automatically replaces image blocks with an [Unsupported Image] marker so the conversation is not interrupted",
         "mediaHeuristic": "Heuristic Text-Only Model Detection",
-        "mediaHeuristicDescription": "Predictively strips images before sending based on a built-in model-name list. When off, only the declared-text-only and upstream-error fallback paths remain, preventing the built-in list from misclassifying a multimodal model as text-only and silently dropping images"
+        "mediaHeuristicDescription": "Predictively strips images before sending based on a built-in model-name list. When off, only the declared-text-only and upstream-error fallback paths remain, preventing the built-in list from misclassifying a multimodal model as text-only and silently dropping images",
+        "imageRectifier": "Image Rectifier",
+        "imageRectifierDescription": "Replace image blocks with text prompts before sending, guiding the model to call a specified Skill. Fixes errors for models without multimodal support",
+        "imageRectifierSkill": "Skill Name",
+        "imageRectifierSkillDescription": "The Skill name prompted when image rectification triggers"
       },
       "optimizer": {
         "title": "Bedrock Request Optimizer",

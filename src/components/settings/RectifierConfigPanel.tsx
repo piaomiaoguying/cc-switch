@@ -17,6 +17,8 @@ export function RectifierConfigPanel() {
     requestThinkingBudget: true,
     requestMediaFallback: true,
     requestMediaHeuristic: true,
+    requestImageRectifier: true,
+    imageRectifierSkill: "image-analysis",
   });
   const [optimizerConfig, setOptimizerConfig] = useState<OptimizerConfig>({
     enabled: false,
@@ -143,6 +145,39 @@ export function RectifierConfigPanel() {
             }
           />
         </div>
+        <div className="flex items-center justify-between pl-4">
+          <div className="space-y-0.5">
+            <Label>{t("settings.advanced.rectifier.imageRectifier")}</Label>
+            <p className="text-xs text-muted-foreground">
+              {t("settings.advanced.rectifier.imageRectifierDescription")}
+            </p>
+          </div>
+          <Switch
+            checked={config.requestImageRectifier}
+            disabled={!config.enabled}
+            onCheckedChange={(checked) =>
+              handleChange({ requestImageRectifier: checked })
+            }
+          />
+        </div>
+        {config.requestImageRectifier && (
+          <div className="flex items-center justify-between pl-8">
+            <div className="space-y-0.5">
+              <Label>{t("settings.advanced.rectifier.imageRectifierSkill")}</Label>
+              <p className="text-xs text-muted-foreground">
+                {t("settings.advanced.rectifier.imageRectifierSkillDescription")}
+              </p>
+            </div>
+            <input
+              className="h-9 w-48 rounded-md border border-input bg-background px-3 text-sm"
+              value={config.imageRectifierSkill}
+              disabled={!config.enabled}
+              onChange={(e) =>
+                handleChange({ imageRectifierSkill: e.target.value })
+              }
+            />
+          </div>
+        )}
       </div>
 
       <div className="border-t pt-6 mt-6">
