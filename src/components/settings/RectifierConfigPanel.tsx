@@ -15,8 +15,8 @@ export function RectifierConfigPanel() {
     enabled: true,
     requestThinkingSignature: true,
     requestThinkingBudget: true,
-    requestImageRectifier: false,
-    imageRectifierSkill: "image-analyzer",
+    requestMediaFallback: true,
+    requestMediaHeuristic: true,
   });
   const [optimizerConfig, setOptimizerConfig] = useState<OptimizerConfig>({
     enabled: false,
@@ -113,6 +113,36 @@ export function RectifierConfigPanel() {
             }
           />
         </div>
+        <div className="flex items-center justify-between pl-4">
+          <div className="space-y-0.5">
+            <Label>{t("settings.advanced.rectifier.mediaFallback")}</Label>
+            <p className="text-xs text-muted-foreground">
+              {t("settings.advanced.rectifier.mediaFallbackDescription")}
+            </p>
+          </div>
+          <Switch
+            checked={config.requestMediaFallback}
+            disabled={!config.enabled}
+            onCheckedChange={(checked) =>
+              handleChange({ requestMediaFallback: checked })
+            }
+          />
+        </div>
+        <div className="flex items-center justify-between pl-8">
+          <div className="space-y-0.5">
+            <Label>{t("settings.advanced.rectifier.mediaHeuristic")}</Label>
+            <p className="text-xs text-muted-foreground">
+              {t("settings.advanced.rectifier.mediaHeuristicDescription")}
+            </p>
+          </div>
+          <Switch
+            checked={config.requestMediaHeuristic}
+            disabled={!config.enabled || !config.requestMediaFallback}
+            onCheckedChange={(checked) =>
+              handleChange({ requestMediaHeuristic: checked })
+            }
+          />
+        </div>
       </div>
 
       <div className="border-t pt-6 mt-6">
@@ -202,55 +232,6 @@ export function RectifierConfigPanel() {
           </div>
         </div>
       </div>
-
-      {/* 图片整流器 */}
-      <div className="border-t pt-6 mt-6">
-        <div className="space-y-1 mb-4">
-          <h3 className="text-sm font-medium">
-            {t("settings.advanced.rectifier.imageRectifier")}
-          </h3>
-          <p className="text-xs text-muted-foreground">
-            {t("settings.advanced.rectifier.imageRectifierDescription")}
-          </p>
-        </div>
-        <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <div className="space-y-0.5">
-              <Label>{t("settings.advanced.rectifier.imageRectifierEnabled")}</Label>
-              <p className="text-xs text-muted-foreground">
-                {t("settings.advanced.rectifier.imageRectifierEnabledDescription")}
-              </p>
-            </div>
-            <Switch
-              checked={config.requestImageRectifier}
-              disabled={!config.enabled}
-              onCheckedChange={(checked) =>
-                handleChange({ requestImageRectifier: checked })
-              }
-            />
-          </div>
-
-          <div className="flex items-center justify-between pl-4">
-            <div className="space-y-0.5 flex-1 mr-4">
-              <Label>{t("settings.advanced.rectifier.imageRectifierSkill")}</Label>
-              <p className="text-xs text-muted-foreground">
-                {t("settings.advanced.rectifier.imageRectifierSkillDescription")}
-              </p>
-            </div>
-            <input
-              type="text"
-              className="h-9 w-48 rounded-md border border-input bg-background px-3 text-sm"
-              value={config.imageRectifierSkill}
-              disabled={!config.enabled}
-              onChange={(e) =>
-                handleChange({ imageRectifierSkill: e.target.value })
-              }
-              placeholder="image-analyzer"
-            />
-          </div>
-        </div>
-      </div>
-
     </div>
   );
 }

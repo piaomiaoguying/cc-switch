@@ -1,237 +1,538 @@
-# CC Switch（增强分支）
+<div align="center">
 
-**[CC Switch](https://github.com/farion1231/cc-switch) 的增强分支 — 为 AI CLI 工具新增图片整流器和多 Provider 视觉分析技能。**
+# CC Switch
 
-## 为什么需要本项目？
+### The All-in-One Manager for Claude Code, Claude Desktop, Codex, Gemini CLI, OpenCode, OpenClaw & Hermes Agent
 
-**AI CLI 工具 + 第三方模型 = 图片理解真空地带。** 这是 Claude Code、OpenCode 等工具搭配 DeepSeek 等不支持多模态的模型时，最让人头疼的问题。
+[![Version](https://img.shields.io/github/v/release/farion1231/cc-switch?color=blue&label=version)](https://github.com/farion1231/cc-switch/releases)
+[![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey.svg)](https://github.com/farion1231/cc-switch/releases)
+[![Built with Tauri](https://img.shields.io/badge/built%20with-Tauri%202-orange.svg)](https://tauri.app/)
+[![Downloads](https://img.shields.io/github/downloads/farion1231/cc-switch/total)](https://github.com/farion1231/cc-switch/releases/latest)
 
-### 传统方案的死结
+<a href="https://trendshift.io/repositories/15372" target="_blank"><img src="https://trendshift.io/api/badge/repositories/15372" alt="farion1231%2Fcc-switch | Trendshift" style="width: 250px; height: 55px;" width="250" height="55"/></a>
 
-常见的做法是在全局 `CLAUDE.md` 中写规则，强制要求使用某个 Skill 或 MCP 去处理图片。但这里有一个绕不开的坑：
+### 🌐 The Only Official Website: **[ccswitch.io](https://ccswitch.io)**
 
-**Claude Code 在系统层面硬编码了指令 — 粘贴图片时必定调用 `read` 工具，直接把图片发给模型。** 这个系统指令的优先级高于 `CLAUDE.md`，所以你的规则根本拦不住它。
+English | [中文](README_ZH.md) | [日本語](README_JA.md) | [Deutsch](README_DE.md) | [Changelog](CHANGELOG.md)
 
-结果是什么？Ctrl+V 粘贴一张截图，模型收到 base64 图片数据，直接报错或胡言乱语。**整段对话就此腐烂，无法继续。**
+</div>
 
-![关闭图片整流器时，Claude Code + DeepSeek 对话直接腐烂](assets/screenshots/claudecode+DeepSeek关闭图片整流器运行示意图.png)
+## ❤️Sponsor
 
-更糟的是，Debug 时我们几乎不会把截图先保存到本地再传 — 直接截图 → 粘贴到剪贴板 → Ctrl+V 才是最自然的工作流。传统方案只适用于"先保存为文件，再给路径"的场景，跟实际使用习惯完全错位。
+> [Want to appear here?](mailto:farion1231@gmail.com)
 
-### 本项目的解法
+<details open>
+<summary>Click to collapse</summary>
 
-**图片整流器 + 图片分析技能，两层防线。**
+[![MiniMax](assets/partners/banners/minimax-en.jpeg)](https://platform.minimax.io/subscribe/coding-plan?code=ClLhgxr2je&source=link)
 
-| 场景 | 传统方案 | 本项目 |
-|------|---------|--------|
-| Ctrl+V 粘贴剪贴板图片到 Claude Code | ❌ 系统硬编码 `read`，直接发给模型，对话烂掉 | ✅ 整流器在代理层拦截，替换为文本提示，引导模型调用 Skill |
-| 给定图片文件路径 | ⚠️ `CLAUDE.md` 规则勉强可用，但不同 CLI 行为不一致 | ✅ 整流器统一拦截，不依赖 MD 文件规则 |
-| OpenCode 粘贴剪贴板图片 | ❌ OpenCode 不生成临时文件，路径都拿不到 | ✅ Skill 脚本自动检测：有路径读文件，没路径直接从剪贴板读取 |
-| 多 Provider 切换 | ❌ 单个模型挂了就挂了 | ✅ Fallback 机制，30+ Provider 自动切换 |
+MiniMax-M2.7 is a next-generation large language model designed for autonomous evolution and real-world productivity. Unlike traditional models, M2.7 actively participates in its own improvement through agent teams, dynamic tool use, and reinforcement learning loops. It delivers strong performance in software engineering (56.22% on SWE-Pro, 55.6% on VIBE-Pro, 57.0% on Terminal Bench 2) and excels in complex office workflows, achieving a leading 1495 ELO on GDPval-AA. With high-fidelity editing across Word, Excel, and PowerPoint, and a 97% adherence rate across 40+ complex skills, M2.7 sets a new standard for building AI-native workflows and organizations.
 
-> **关闭整流器：** Claude Code + DeepSeek，Ctrl+V 粘贴图片后对话直接腐烂
-
-![claudecode+DeepSeek关闭图片整流器运行示意图](assets/screenshots/claudecode+DeepSeek关闭图片整流器运行示意图.png)
-
-> **启用整流器：** Claude Code + DeepSeek，图片被正常拦截并引导调用 Skill
-
-![claudecode+DeepSeek启用图片整流器运行示意图](assets/screenshots/claudecode+DeepSeek启用图片整流器运行示意图.png)
-
-> **一次粘贴多张图片：** Claude Code + DeepSeek，支持一次性粘贴多张剪贴板图片
-
-![claudecode支持一次粘贴多张剪贴板图片](assets/screenshots/claudecode支持一次粘贴多张剪贴板图片.png)
-
-> **OpenCode + DeepSeek：** Skill 检测到无临时文件，自动从剪贴板读取
-
-![opencode+DeepSeek运行示意图](assets/screenshots/opencode+DeepSeek运行示意图.png)
-
-### 两层防线的分工
-
-1. **图片整流器（代理层）** — 在请求发出前拦截。检测 messages 中的 base64 图片块，移除原始数据，替换为文本提示，引导模型调用 Skill。**这一步在模型看到请求之前就完成了。**
-
-2. **图片分析技能（CLI 工具）** — 被模型调用后，智能判断图片来源：传了本地路径就读文件，没传路径就从系统剪贴板直接读取。**兼容 Claude Code（粘贴生成临时文件）和 OpenCode（粘贴不生成临时文件）两种行为。**
-
-> **注意：** 本项目目前仅在 **Claude Code** 和 **OpenCode** 上经过完整测试。其他 AI CLI 工具（Codex、Gemini CLI、OpenClaw、Hermes 等）理论上也能工作，但尚未验证。欢迎自行测试并反馈。
+[Click](https://platform.minimax.io/subscribe/coding-plan?code=ClLhgxr2je&source=link) to get an exclusive 12% off the MiniMax Token Plan!
 
 ---
 
-## 原项目简介
+<table>
+<tr>
+<td width="180"><a href="https://www.packyapi.com/register?aff=cc-switch"><img src="assets/partners/logos/packycode.png" alt="PackyCode" width="150"></a></td>
+<td>Thanks to PackyCode for sponsoring this project! PackyCode is a reliable and efficient API relay service provider, offering relay services for Claude Code, Codex, Gemini, and more. PackyCode provides special discounts for our software users: register using <a href="https://www.packyapi.com/register?aff=cc-switch">this link</a> and enter the "cc-switch" promo code during first recharge to get 10% off.</td>
+</tr>
 
-[CC Switch](https://github.com/farion1231/cc-switch) 是一款管理 AI CLI 工具（Claude Code、Codex、Gemini CLI、OpenCode、OpenClaw、Hermes）的桌面应用，提供供应商管理、代理/故障转移、MCP/Skills 管理和用量统计等功能。
+<tr>
+<td width="180"><a href="https://aigocode.com/invite/CC-SWITCH"><img src="assets/partners/logos/aigocode.png" alt="AIGoCode" width="150"></a></td>
+<td>Thanks to AIGoCode for sponsoring this project! AIGoCode is an all-in-one platform that integrates Claude Code, Codex, and the latest Gemini models, providing you with stable, efficient, and highly cost-effective AI coding services. The platform offers flexible subscription plans, zero risk of account suspension, direct access with no VPN required, and lightning-fast responses. AIGoCode has prepared a special benefit for CC Switch users: if you register via <a href="https://aigocode.com/invite/CC-SWITCH">this link</a>, you'll receive an extra 10% bonus credit on your first top-up!</td>
+</tr>
 
-本分支在此基础上新增了针对**图片输入**处理的功能，解决大量第三方 API 供应商不支持多模态（视觉理解）的问题。
+<tr>
+<td width="180"><a href="https://www.aicodemirror.com/register?invitecode=9915W3"><img src="assets/partners/logos/aicodemirror.jpg" alt="AICodeMirror" width="150"></a></td>
+<td>Thanks to AICodeMirror for sponsoring this project! AICodeMirror provides official high-stability relay services for Claude Code / Codex / Gemini CLI, with enterprise-grade concurrency, fast invoicing, and 24/7 dedicated technical support.
+Claude Code / Codex / Gemini official channels at 38% / 2% / 9% of original price, with extra discounts on top-ups! AICodeMirror offers special benefits for CC Switch users: register via <a href="https://www.aicodemirror.com/register?invitecode=9915W3">this link</a> to enjoy 20% off your first top-up, and enterprise customers can get up to 25% off!</td>
+</tr>
 
----
+<tr>
+<td width="180"><a href="https://www.shengsuanyun.com/?from=CH_4HHXMRYF"><img src="assets/partners/logos/shengsuanyun.png" alt="Shengsuanyun" width="150"></a></td>
+<td>Thanks to Shengsuanyun for sponsoring this project! Shengsuanyun is a super factory serving AI Native Teams — an industrial-grade AI task parallel execution platform. Its model marketplace aggregates Claude, ChatGPT, Gemini, and other domestic and international LLM and multimedia model capabilities with direct supply. Absolutely no reverse engineering or dilution — platform-wide model SLA availability reaches 99.7%, with <a href="https://watch.shengsuanyun.com/status/shengsuanyun">monitoring dashboards</a> showing green across the board. It also offers enterprise-grade custom gateways for fine-grained team cost and permission management, smart routing, security protection, and BYOK (Bring Your Own Key) hosting. The platform charges on a pay-per-use and tokens plan (coming soon) basis, with invoicing available. Register via <a href="https://www.shengsuanyun.com/?from=CH_4HHXMRYF">this link</a> as a new user to receive ¥10 in credits plus a 10% bonus on your first top-up.</td>
+</tr>
 
-## 本分支新增功能
+<tr>
+<td width="180"><a href="https://pateway.ai/?ch=etzpm8&aff=WB6M6F67#/"><img src="assets/partners/logos/pateway.png" alt="PatewayAI" width="150"></a></td>
+<td>Thanks to PatewayAI for sponsoring this project! PatewayAI is an API relay service provider built for heavy AI developers, focused on directly relaying official high-quality model APIs. It offers the full Claude lineup and the Codex series, 100% sourced from official channels — no dilution, no fakes, verification welcome. Billing is transparent and every token-level invoice can be audited line by line.
+It also supports enterprise-grade concurrency and provides a dedicated management platform for enterprise customers — formal contracts and invoicing are available; visit the official website for contact details.
+Register now via <a href="https://pateway.ai/?ch=etzpm8&aff=WB6M6F67#/">this link</a> to receive $3 in trial credit. Top-ups go as low as 60% of the original price, with a two-way referral bonus of up to $150!</td>
+</tr>
 
-### 1. 图片整流器
+<tr>
+<td width="180"><a href="https://www.byteplus.com/en/product/modelark?utm_campaign=hw&utm_content=ccswitch&utm_medium=devrel_tool_web&utm_source=OWO&utm_term=ccswitch"><img src="assets/partners/logos/byteplus.png" alt="BytePlus" width="150"></a></td>
+<td>Thanks to Dola seed for sponsoring this project! Dola Seed 2.0 is a full‑modal general large model independently developed by ByteDance for the global market. Built on a unified multimodal architecture, it supports joint understanding and generation of text, images, audio, and video. It natively enables agent collaboration, with strong reasoning, long‑task execution, tool integration, and coding capabilities. It is widely applicable to smart cockpits, personal assistants, education, customer support, marketing, retail, and other scenarios. It excels in multimodal perception, end‑to‑end complex task delivery, stable interaction, and data security, and is readily accessible and deployable via the ModelArk platform.Register via <a href="https://www.byteplus.com/en/product/modelark?utm_campaign=hw&utm_content=ccswitch&utm_medium=devrel_tool_web&utm_source=OWO&utm_term=ccswitch">this link</a> to get 500,000 tokens of free inference quota per model.<a href="https://www.volcengine.com/activity/agentplan?utm_campaign=hw&utm_content=ccswitch&utm_medium=devrel_tool_web&utm_source=OWO&utm_term=ccswitch"> >>中国大陆地区的开发者请点击这里</a></td>
+</tr>
 
-**解决的问题：** 大量第三方 API 供应商（中转站、非官方接口）不支持多模态输入。当请求的 messages 数组中出现 `type: "image"` 的 base64 图片块时，这些供应商会报错或行为异常。
+<tr>
+<td width="180"><a href="https://cloud.siliconflow.cn/i/drGuwc9k"><img src="assets/partners/logos/silicon_en.jpg" alt="SiliconFlow" width="150"></a></td>
+<td>Thanks to SiliconFlow for sponsoring this project! SiliconFlow is a high-performance AI infrastructure and model API platform, providing fast and reliable access to language, speech, image, and video models in one place. With pay-as-you-go billing, broad multimodal model support, high-speed inference, and enterprise-grade stability, SiliconFlow helps developers and teams build and scale AI applications more efficiently. Register via <a href="https://cloud.siliconflow.cn/i/drGuwc9k">this link</a> and complete real-name verification to receive ¥16 in bonus credit, usable across models on the platform. SiliconFlow is also now compatible with OpenClaw, allowing users to connect a SiliconFlow API key and call major AI models for free.</td>
+</tr>
 
-**解决方案：** 图片整流器是代理层的拦截器，在**请求转发之前**运行。它扫描 `messages[*].content`，检测 `type: "image"` 块，移除 base64 数据（通常数 MB），替换为文本提示，引导模型调用指定 skill 来处理图片。
+<tr>
+<td width="180"><a href="https://cubence.com/signup?code=CCSWITCH&source=ccs"><img src="assets/partners/logos/cubence.png" alt="Cubence" width="150"></a></td>
+<td>Thanks to Cubence for sponsoring this project! Cubence is a reliable and efficient API relay service provider, offering relay services for Claude Code, Codex, Gemini, and more with flexible billing options including pay-as-you-go and monthly plans. Cubence provides special discounts for CC Switch users: register using <a href="https://cubence.com/signup?code=CCSWITCH&source=ccs">this link</a> and enter the "CCSWITCH" promo code during recharge to get 10% off every top-up!</td>
+</tr>
 
-**关键特性：**
-- 自动检测并替换 messages 中的 `type: "image"` 块
-- 存在图片缓存引用时自动提取文件路径拼入提示
-- 可配置调用的 skill 名称（默认：`image-analysis`）
-- 与下方的图片分析技能无缝配合
+<tr>
+<td width="180"><a href="https://www.dmxapi.cn/register?aff=bUHu"><img src="assets/partners/logos/dmx-en.jpg" alt="DMXAPI" width="150"></a></td>
+<td>Thanks to DMXAPI for sponsoring this project! DMXAPI provides global large model API services to 200+ enterprise users. One API key for all global models. Features include: instant invoicing, unlimited concurrency, starting from $0.15, 24/7 technical support. GPT/Claude/Gemini all at 32% off, domestic models 20-50% off, Claude Code exclusive models at 66% off! <a href="https://www.dmxapi.cn/register?aff=bUHu">Register here</a></td>
+</tr>
 
-**配置方式：** 路由设置 → 整流器区域 → 图片整流器。打开开关，可按需修改 skill 名称。
+<tr>
+<td width="180"><a href="https://www.compshare.cn/coding-plan?ytag=GPU_YY_YX_git_cc-switch"><img src="assets/partners/logos/ucloud.png" alt="Compshare" width="150"></a></td>
+<td>Thanks to Compshare for sponsoring this project! Compshare is UCloud's AI cloud platform, providing stable and comprehensive domestic and international model APIs with just one key. Featuring cost-effective monthly and per-use domestic-model Coding Plan packages, alongside stable officially-relayed overseas models. Supports Claude Code, Codex, and API access. Enterprise-grade high concurrency, 24/7 technical support, and self-service invoicing. Users who register via <a href="https://www.compshare.cn/coding-plan?ytag=GPU_YY_YX_git_cc-switch">this link</a> will receive a free 5 CNY platform trial credit!</td>
+</tr>
 
-![图片整流器开关](assets/screenshots/图片整流器开关示意图.png)
+<tr>
+<td width="180"><a href="https://crazyrouter.com/register?aff=OZcm&ref=cc-switch"><img src="assets/partners/logos/crazyrouter.png" alt="Crazyrouter" width="150"></a></td>
+<td>Thanks to Crazyrouter for sponsoring this project! Crazyrouter is a high-performance AI API aggregation platform — one API key for 300+ models including Claude Code, Codex, Gemini CLI, and more. All models at 55% of official pricing with auto-failover, smart routing, and unlimited concurrency. Crazyrouter offers an exclusive deal for CC Switch users: register via <a href="https://crazyrouter.com/register?aff=OZcm&ref=cc-switch">this link</a> and contact customer support to claim <strong>$2 free credit</strong>, plus enter promo code `CCSWITCH` on your first top-up for an extra <strong>30% bonus credit</strong>! </td>
+</tr>
 
----
+<tr>
+<td width="180"><a href="https://www.right.codes/register?aff=CCSWITCH"><img src="assets/partners/logos/rightcode.jpg" alt="RightCode" width="150"></a></td>
+<td>Thank you to Right Code for sponsoring this project! Right Code reliably provides routing services for models such as Claude Code, Codex, and Gemini, with both pay-as-you-go and monthly subscription billing options available. Invoices are available upon top-up, and enterprise and team users can receive dedicated one-on-one support. Right Code also offers an exclusive discount for CC Switch users: register via <a href="https://www.right.codes/register?aff=CCSWITCH">this link</a>, and with every top-up you will receive pay-as-you-go credit equivalent to 5% of the amount paid.</td>
+</tr>
 
-### 2. 图片分析技能
+<tr>
+<td width="180"><a href="https://www.sssaicode.com/register?ref=DCP0SM"><img src="assets/partners/logos/sssaicode.png" alt="SSSAiCode" width="150"></a></td>
+<td>Thanks to SSSAiCode for sponsoring this project! SSSAiCode is a stable and reliable API relay service, dedicated to providing stable, reliable, and affordable Claude and Codex model services, with same-day fast invoicing. SSSAiCode offers a special deal for CC Switch users: register via <a href="https://www.sssaicode.com/register?ref=DCP0SM">this link</a> to enjoy $10 extra credit on every top-up!</td>
+</tr>
 
-一个独立的 Python 命令行图片视觉识别工具，兼容任何能执行 Shell 命令的 AI CLI。
+<tr>
+<td width="180"><a href="https://www.micuapi.ai/register?aff=aOYQ"><img src="assets/partners/logos/mikubanner.svg" alt="Micu" width="150"></a></td>
+<td>Thanks to Micu API for sponsoring this project! Micu API is a global LLM relay service provider dedicated to delivering the best cost-performance ratio with high stability. Backed by a registered enterprise for core assurance, eliminating any risk of service discontinuation, with fast official invoicing support! We champion "zero cost to try": top up from as low as ¥1 with no minimum, and get fee-free refunds anytime! Micu API offers an exclusive deal for CC Switch users: register via <a href="https://www.micuapi.ai/register?aff=aOYQ">this link</a> and enter promo code "ccswitch" when topping up to enjoy a <strong>10% discount</strong>!</td>
+</tr>
 
-**核心能力：**
-- 支持本地图片（jpg/png/gif/webp/bmp）、网络图片 URL、系统剪贴板（macOS AppleScript）
-- 多图对比（多次 `--image`）
-- Fallback 机制：按配置顺序依次尝试所有 provider，失败自动切换，第一个成功的结果标注 `[provider名]` 后返回
+<tr>
+<td width="180"><a href="https://lemondata.cc/r/FFX1ZDUP"><img src="assets/partners/logos/lemondata.png" alt="LemonData" width="150"></a></td>
+<td>Thanks to LemonData for sponsoring this project! LemonData is a high-performance AI API aggregation platform — one API key for 300+ models including GPT, Claude, Gemini, DeepSeek, and more. All models priced 30–70% below official rates with auto-failover, smart routing, and unlimited concurrency. New users get $1 free credit instantly upon registration — sign up via <a href="https://lemondata.cc/r/FFX1ZDUP">this link</a>to claim your bonus and start building right away</strong>!</td>
+</tr>
 
-**预置 30+ AI Provider：**
+<tr>
+<td width="180"><a href="https://ctok.ai"><img src="assets/partners/logos/ctok.png" alt="CTok" width="150"></a></td>
+<td>Thanks to CTok.ai for sponsoring this project! CTok.ai is dedicated to building a one-stop AI programming tool service platform. We offer professional Claude Code packages and technical community services, with support for Google Gemini and OpenAI Codex. Through carefully designed plans and a professional tech community, we provide developers with reliable service guarantees and continuous technical support, making AI-assisted programming a true productivity tool. Click <a href="https://ctok.ai">here</a> to register!</td>
+</tr>
 
-| 平台 | 代表模型 |
-|------|---------|
-| 火山引擎 | 豆包 Seed 2.0 Pro/Lite/Mini、Vision 250815 |
-| 硅基流动 | Qwen3.6-35B-A3B、Qwen3.6-27B |
-| 阿里百炼 | Qwen3.6 Plus/Flash、Qwen3.5 Omni、Kimi K2.6、MiniMax M2.5 |
-| 智谱 | GLM-4.6V-Flash |
-| 商汤 | SenseNova-6.7-Flash-Lite |
+<tr>
+<td width="180"><a href="https://console.claudeapi.com/register?aff=pCLD"><img src="assets/partners/logos/claudeapi.png" alt="ClaudeAPI" width="150"></a></td>
+<td>This project is sponsored by <a href="https://console.claudeapi.com/register?aff=pCLD">Claude API</a>. Direct Claude API access — connect Claude Code and Agent apps in 3 minutes. New users can claim a free trial credit.Powered by official Anthropic API keys + AWS Bedrock official channels. No reverse engineering, no model degradation. Full support for Opus / Sonnet / Haiku model lineup, with official capabilities preserved including Tool Use, 1M context window, and more. Built for Claude Code power users, Agent engineers, and enterprise engineering teams. Invoicing and dedicated team support available. Click <a href="https://console.claudeapi.com/register?aff=pCLD">here</a> to register!</td>
+</tr>
 
-**与图片整流器的联动：** 当某模型不支持图片时，整流器会将图片块替换为文本提示，引导模型调用 Skill，模型自动通过 CLI 完成实际视觉分析。整个过程对用户透明，无需手动执行 Python 脚本。
+<tr>
+<td width="180"><a href="https://claudecn.top"><img src="assets/partners/logos/claudecn.jpg" alt="ClaudeCN" width="150"></a></td>
+<td>Thanks to ClaudeCN for sponsoring this project! ClaudeCN is an enterprise-grade AI gateway platform operated by a registered company. It delivers high-availability commercial API access to popular models including Claude, GPT, and DeepSeek, and is built around formal enterprise procurement workflows — corporate bank transfers, signed contracts, and full compliance. Register via <a href="https://claudecn.top">this link</a>!</td>
+</tr>
 
----
+<tr>
+<td width="180"><a href="https://runapi.co"><img src="assets/partners/logos/runapi.jpg" alt="RunAPI" width="150"></a></td>
+<td>Thanks to RunAPI for sponsoring this project! RunAPI is a high-performance and reliable AI model API gateway — one API key gives you access to 150+ mainstream models including OpenAI, Claude, Gemini, DeepSeek, and Grok, with prices as low as 10% of the official rate and excellent stability. It works seamlessly with Claude Code, OpenClaw, and other tools. Exclusive benefit for CC Switch users: register and contact customer support to claim a free ¥14 credit. Register via <a href="https://runapi.co">this link</a>!</td>
+</tr>
 
-### 3. dev.sh — 开发启动脚本
+<tr>
+<td width="180"><a href="https://apikey.fun/register?aff=CCSwitch"><img src="assets/partners/logos/apikey_banner.png" alt="APIKEY.FUN" width="150"></a></td>
+<td>Thanks to APIKEY.FUN for sponsoring this project! APIKEY.FUN is a professional enterprise-grade AI relay platform dedicated to providing stable, efficient, and low-cost AI model API access for enterprises and individual developers. The platform supports popular mainstream models such as Claude, OpenAI, and Gemini, with prices as low as 7% of official rates. Register through this project's <a href="https://apikey.fun/register?aff=CCSwitch">exclusive link</a> to enjoy an exclusive offer of up to <strong>permanent 5% off top-ups</strong>.</td>
+</tr>
 
-封装 `pnpm tauri dev` / `pnpm tauri build` 的便捷脚本：
+<tr>
+<td width="180"><a href="https://apinebula.com/02rw5X"><img src="assets/partners/logos/apinebula_banner.png" alt="APINebula" width="150"></a></td>
+<td>Thanks to APINEBULA for sponsoring this project! APINEBULA, an enterprise-grade AI aggregation platform under Galaxy Video Bureau, leverages extensive platform resources to provide developers, teams, and enterprises with stable, cost-effective access to large language model APIs. The platform integrates leading, full-powered models like Claude, GPT, and Gemini, allowing you to connect to the world's top AI models through a single API, with prices starting as low as 10% of the original cost. Designed for AI programming, Agent development, and business system integration, APINEBULA supports enterprise-grade high concurrency, formal contracts, corporate bank transfers, and invoicing services. APINEBULA provides special discounts for our software users: register using <a href="https://apinebula.com/02rw5X">this link</a> and enter the <strong>"ccswitch"</strong> promo code during your first recharge to get <strong>10% off</strong>.</td>
+</tr>
+
+<tr>
+<td width="180"><a href="https://www.atlascloud.ai/coding-plan?utm_source=github&utm_campaign=cc-switch"><img src="assets/partners/logos/atlascloud_banner.png" alt="Atlas Cloud" width="150"></a></td>
+<td>Atlas Cloud is a full-modal AI inference platform that gives developers a single AI API to access video generation, image generation, and LLM APIs. Instead of managing multiple vendor integrations, you connect once and get unified access to 300+ curated models across all modalities. Check out Atlas Cloud's new <a href="https://www.atlascloud.ai/coding-plan?utm_source=github&utm_campaign=cc-switch">coding plan</a> promotion for more budget-friendly API access!</td>
+</tr>
+
+<tr>
+<td width="180"><a href="https://www.ccsub.net/register?ref=Y6Z8DXEA"><img src="assets/partners/logos/ccsub.jpg" alt="CCSub" width="150"></a></td>
+<td>Thanks to CCSub for sponsoring this project! CCSub is a stable, affordable AI API relay platform — your drop-in replacement for a Claude.ai subscription. One API key gives you access to Claude Opus 4.8, Sonnet, Haiku, GPT-5, Gemini, and DeepSeek at roughly 30% of direct API cost, with no VPN required from anywhere in the world. Compatible with Claude Code, Codex, Cursor, Cline, Continue, Windsurf, and all major AI coding tools. Register via <a href="https://www.ccsub.net/register?ref=Y6Z8DXEA">this link</a> and get $5 free credit on sign-up.</td>
+</tr>
+
+</table>
+
+</details>
+
+## Why CC Switch?
+
+Modern AI-powered coding relies on tools like Claude Code, Claude Desktop, Codex, Gemini CLI, OpenCode, OpenClaw, and Hermes — but each has its own configuration format. Switching API providers means manually editing JSON, TOML, or `.env` files, and there is no unified way to manage MCP and Skills across multiple tools.
+
+**CC Switch** gives you a single desktop app to manage all supported AI tools. Instead of editing config files by hand, you get a visual interface to import providers with one click, switch between them instantly, with 50+ built-in provider presets, unified MCP and Skills management, and system tray quick switching — all backed by a reliable SQLite database with atomic writes that protect your configs from corruption.
+
+- **One App, Seven Tools** — Manage Claude Code, Claude Desktop, Codex, Gemini CLI, OpenCode, OpenClaw, and Hermes from a single interface
+- **No More Manual Editing** — 50+ provider presets including AWS Bedrock, NVIDIA NIM, and community relays; just pick and switch
+- **Unified MCP & Skills Management** — One panel to manage MCP servers and Skills across Claude, Codex, Gemini, OpenCode, and Hermes with bidirectional sync
+- **System Tray Quick Switch** — Switch providers instantly from the tray menu, no need to open the full app
+- **Cloud Sync** — Sync provider data across devices via Dropbox, OneDrive, iCloud, or WebDAV servers
+- **Cross-Platform** — Native desktop app for Windows, macOS, and Linux, built with Tauri 2
+- **Built-in Utilities** — Includes various utilities for first-launch login confirmation, signature bypass, plugin extension sync, and more
+
+## Screenshots
+
+|                  Main Interface                   |                  Add Provider                  |
+| :-----------------------------------------------: | :--------------------------------------------: |
+| ![Main Interface](assets/screenshots/main-en.png) | ![Add Provider](assets/screenshots/add-en.png) |
+
+## Features
+
+[Full Changelog](CHANGELOG.md) | [Release Notes](docs/release-notes/v3.16.1-en.md)
+
+### Provider Management
+
+- **7 supported tools, 50+ presets** — Claude Code, Claude Desktop, Codex, Gemini CLI, OpenCode, OpenClaw, Hermes; copy your key and import with one click
+- **Universal providers** — One config syncs to Claude Code, Codex, and Gemini CLI
+- One-click switching, system tray quick access, drag-and-drop sorting, import/export
+
+### Proxy & Failover
+
+- **Local proxy with hot-switching** — Format conversion, auto-failover, circuit breaker, provider health monitoring, and request rectifier
+- **App-level takeover** — Independently proxy Claude, Codex, or Gemini, down to individual providers
+
+### MCP, Prompts & Skills
+
+- **Unified MCP panel** — Manage MCP servers across Claude, Codex, Gemini, OpenCode, and Hermes with bidirectional sync and Deep Link import
+- **Prompts** — Markdown editor with cross-app sync (CLAUDE.md / AGENTS.md / GEMINI.md) and backfill protection
+- **Skills** — One-click install from GitHub repos or ZIP files, custom repository management, with symlink and file copy support
+
+### Usage & Cost Tracking
+
+- **Usage dashboard** — Track spending, requests, and tokens with trend charts, detailed request logs, and custom per-model pricing
+
+### Session Manager & Workspace
+
+- Browse, search, and restore conversation history across supported session sources
+- **Workspace editor** (OpenClaw) — Edit agent files (AGENTS.md, SOUL.md, etc.) with Markdown preview
+
+### System & Platform
+
+- **Cloud sync** — Custom config directory (Dropbox, OneDrive, iCloud, NAS) and WebDAV server sync
+- **Deep Link** (`ccswitch://`) — Import providers, MCP servers, prompts, and skills via URL
+- Dark / Light / System theme, auto-launch, auto-updater, atomic writes, auto-backups, i18n (zh/zh-TW/en/ja)
+
+## FAQ
+
+<details>
+<summary><strong>Which AI tools does CC Switch support?</strong></summary>
+
+CC Switch supports seven tools: **Claude Code**, **Claude Desktop**, **Codex**, **Gemini CLI**, **OpenCode**, **OpenClaw**, and **Hermes**. Each tool has dedicated provider presets and configuration management.
+
+</details>
+
+<details>
+<summary><strong>Do I need to restart the terminal after switching providers?</strong></summary>
+
+For most tools, yes — restart your terminal or the CLI tool for changes to take effect. The exception is **Claude Code**, which currently supports hot-switching of provider data without a restart.
+
+</details>
+
+<details>
+<summary><strong>My plugin configuration disappeared after switching providers — what happened?</strong></summary>
+
+CC Switch provides a "Shared Config Snippet" feature to pass common data (beyond API keys and endpoints) between providers. Go to "Edit Provider" → "Shared Config Panel" → click "Extract from Current Provider" to save all common data. When creating a new provider, check "Write Shared Config" (enabled by default) to include plugin data in the new provider. All your configuration items are preserved in the default provider imported when you first launched the app.
+
+</details>
+
+<details>
+<summary><strong>macOS installation</strong></summary>
+
+CC Switch for macOS is code-signed and notarized by Apple. You can download and install it directly — no extra steps needed. We recommend using the `.dmg` installer.
+
+</details>
+
+<details>
+<summary><strong>Why can't I delete the currently active provider?</strong></summary>
+
+CC Switch follows a "minimal intrusion" design principle — even if you uninstall the app, your CLI tools will continue to work normally. The system always keeps one active configuration, because deleting all configurations would make the corresponding CLI tool unusable. If you rarely use a specific CLI tool, you can hide it in Settings. To switch back to official login, see the next question.
+
+</details>
+
+<details>
+<summary><strong>How do I switch back to official login?</strong></summary>
+
+Add an official provider from the preset list. After switching to it, run the Log out / Log in flow, and then you can freely switch between the official provider and third-party providers. Codex supports switching between different official providers, making it easy to switch between multiple Plus or Team accounts.
+
+</details>
+
+<details>
+<summary><strong>Where is my data stored?</strong></summary>
+
+- **Database**: `~/.cc-switch/cc-switch.db` (SQLite — providers, MCP, prompts, skills)
+- **Local settings**: `~/.cc-switch/settings.json` (device-level UI preferences)
+- **Backups**: `~/.cc-switch/backups/` (auto-rotated, keeps 10 most recent)
+- **Skills**: `~/.cc-switch/skills/` (symlinked to corresponding apps by default)
+- **Skill Backups**: `~/.cc-switch/skill-backups/` (created automatically before uninstall, keeps 20 most recent)
+
+</details>
+
+## Documentation
+
+For detailed guides on every feature, check out the **[User Manual](docs/user-manual/en/README.md)** — covering provider management, MCP/Prompts/Skills, proxy & failover, and more.
+
+## Quick Start
+
+### Basic Usage
+
+1. **Add Provider**: Click "Add Provider" → Choose a preset or create custom configuration
+2. **Switch Provider**:
+   - Main UI: Select provider → Click "Enable"
+   - System Tray: Click provider name directly (instant effect)
+3. **Takes Effect**: Restart your terminal or the corresponding CLI tool to apply changes (Claude Code does not require a restart)
+4. **Back to Official**: Add an "Official Login" preset, restart the CLI tool, then follow its login/OAuth flow
+
+### MCP, Prompts, Skills & Sessions
+
+- **MCP**: Click the "MCP" button → Add servers via templates or custom config → Toggle per-app sync
+- **Prompts**: Click "Prompts" → Create presets with Markdown editor → Activate to sync to live files
+- **Skills**: Click "Skills" → Browse GitHub repos → One-click install to supported apps
+- **Sessions**: Click "Sessions" → Browse, search, and restore conversation history across supported session sources
+
+> **Note**: On first launch, you can manually import existing CLI tool configs as the default provider.
+
+## Download & Installation
+
+### System Requirements
+
+- **Windows**: Windows 10 and above
+- **macOS**: macOS 12 (Monterey) and above
+- **Linux**: Ubuntu 22.04+ / Debian 11+ / Fedora 34+ and other mainstream distributions
+
+### Windows Users
+
+Download the latest `CC-Switch-v{version}-Windows.msi` installer or `CC-Switch-v{version}-Windows-Portable.zip` portable version from the [Releases](../../releases) page.
+
+### macOS Users
+
+**Method 1: Install via Homebrew (Recommended)**
 
 ```bash
-./dev.sh         # Debug 模式（默认）
-./dev.sh debug   # Debug 模式（含请求体打印）
-./dev.sh release # Release 模式
-./dev.sh build   # Release 编译
+brew install --cask cc-switch
 ```
 
-预置了 `CARGO_HTTP_PROXY`，方便国内网络环境下编译 Rust 依赖。
-
-> **注意代理地址：** `dev.sh` 第 10-11 行预置的代理地址 `http://127.0.0.1:7890` 是示例值，国内用户通常需要代理才能顺利拉取 Rust 依赖。请根据自己本地代理软件的端口号修改 `dev.sh` 中的以下两行：
->
-> ```bash
-> export CARGO_HTTP_PROXY=http://127.0.0.1:7890
-> export CARGO_HTTPS_PROXY=http://127.0.0.1:7890
-> ```
->
-> 将 `7890` 替换为你本地代理的实际端口号（常见如 Clash 的 7890、V2Ray 的 10809、手动搭建的可自行设置）。
-
----
-
-## 安装
-
-从源码编译：
+Update:
 
 ```bash
-git clone https://github.com/piaomiaoguying/cc-switch.git
-cd cc-switch
-./dev.sh build
+brew upgrade --cask cc-switch
 ```
 
----
+**Method 2: Manual Download**
 
-## 使用流程
+Download `CC-Switch-v{version}-macOS.dmg` (recommended) or `.zip` from the [Releases](../../releases) page.
 
-### 第一步：注册 AI Provider 并获取 API Key
+> **Note**: CC Switch for macOS is code-signed and notarized by Apple. You can install and open it directly.
 
-本 Skill 预置了多个平台的视觉模型，均有免费额度，挑选自己习惯的平台注册即可：
+### Arch Linux Users
 
-| 平台 | 代表模型 | 注册地址 |
-|------|---------|---------|
-| 阿里百炼 | Qwen3.6 Plus/Flash、Qwen3.5 Omni 等 | [dashscope.aliyun.com](https://dashscope.aliyun.com) |
-| 智谱 | GLM-4.6V-Flash | [open.bigmodel.cn](https://open.bigmodel.cn) |
-| 硅基流动 | Qwen3.6-35B-A3B 等 | [siliconflow.cn](https://siliconflow.cn) |
-| 火山引擎 | 豆包 Seed 2.0 Pro/Lite/Mini | [console.volcengine.com](https://console.volcengine.com) |
-| 商汤 | SenseNova-6.7-Flash-Lite | [platform.sensenova.cn](https://platform.sensenova.cn) |
-
-注册后获取 API Key，填入 Skill 配置文件：
+**Install via paru (Recommended)**
 
 ```bash
-cp skills/image-analysis/scripts/config.example.json skills/image-analysis/scripts/config.json
-# 编辑 config.json，将各个平台的 API Key 填入对应字段
+paru -S cc-switch-bin
 ```
 
-### 第二步：配置全局 CLAUDE.md
+### Linux Users
 
-在你的全局 `CLAUDE.md`（`~/.claude/CLAUDE.md`）中加入以下规则，禁止直接使用 `read` 工具读取图片：
+Download the latest Linux build from the [Releases](../../releases) page:
 
-```markdown
-## 图片处理规范
-禁止使用 `read` 工具读取任何图片文件（如 .png, .jpg, .jpeg）
-必须使用 image-analysis 这个 skill 来分析图片
-当模型返回不支持直接接收图片输入时，自动调用 image-analysis 这个 skill 来分析图片
-```
+- `CC-Switch-v{version}-Linux.deb` (Debian/Ubuntu)
+- `CC-Switch-v{version}-Linux.rpm` (Fedora/RHEL/openSUSE)
+- `CC-Switch-v{version}-Linux.AppImage` (Universal)
 
-> 💡 **OpenCode 用户注意**：OpenCode 的全局指令走的是 `~/.config/opencode/AGENTS.md` 文件，而非 `CLAUDE.md`。图省事可以直接建立软链接：
->
-> ```bash
-> ln -sf ~/.claude/CLAUDE.md ~/.config/opencode/AGENTS.md
-> ```
->
-> 建立软链接后，在 CC Switch 的 **Prompts 提示词管理** 中统一管理 Claude 的 `CLAUDE.md` 即可，OpenCode 会自动同步生效。
+> **Flatpak**: Not included in official releases. You can build it yourself from the `.deb` — see [`flatpak/README.md`](flatpak/README.md) for instructions.
 
-### 第三步：导入 Skill 到 AI CLI
+<details>
+<summary><strong>Architecture Overview</strong></summary>
 
-推荐通过 CC Switch 统一管理 Skill，避免手动复制文件夹：
-
-1. 将 `skills/image-analysis` 配置文件夹放在 CC Switch 目录下
-2. 打开 CC Switch → **Skills 管理**
-3. 在 Claude Code 和 OpenCode 对应的 Skill 开关处，开启 `image-analysis`
-
-这样 CC Switch 会自动将 Skill 同步到各 CLI 的 Skill 目录。
-
-### 第四步：配置 CC Switch 路由与整流器
-
-这是最关键的一步，需要打开三层开关：
-
-**① 打开本地路由**
-
-进入 CC Switch → **路由设置**：
-- 打开**本地路由总开关**
-- 打开 **Claude Code** 的路由开关（常见漏掉：总开关开了但 Claude Code 开关没开）
-
-**② 配置图片整流器**
-
-在路由设置界面往下滑，找到**整流器**区域：
-- 打开**整流器总开关**
-- 打开**图片整流器**开关
-- 在 Skill 名称输入框中填入 `image-analysis`
-
-![图片整流器开关](assets/screenshots/图片整流器开关示意图.png)
-
-### 完成
-
-以上配置完成后，正常的 Claude Code 实例通常会立即生效。如果老的实例没有生效，重新启动一个新的 Claude Code 实例即可。此时模型的网络请求会经过 CC Switch 代理，CC Switch 会对会话数据进行拦截修改：
-
-> 将消息中不支持的图片数据（base64）强制替换为文本内容，文本引导大模型去调用你的 `image-analysis` Skill 来完成图片理解。
-
-之后的整体流程为：
+### Design Principles
 
 ```
-Ctrl+V 粘贴图片 → CC Switch 代理拦截 → 移除 base64，替换为文本提示
-→ 模型收到文本，调用 image-analysis Skill → Skill 读取图片并返回分析结果
+┌─────────────────────────────────────────────────────────────┐
+│                    Frontend (React + TS)                    │
+│  ┌─────────────┐  ┌──────────────┐  ┌──────────────────┐    │
+│  │ Components  │  │    Hooks     │  │  TanStack Query  │    │
+│  │   (UI)      │──│ (Bus. Logic) │──│   (Cache/Sync)   │    │
+│  └─────────────┘  └──────────────┘  └──────────────────┘    │
+└────────────────────────┬────────────────────────────────────┘
+                         │ Tauri IPC
+┌────────────────────────▼────────────────────────────────────┐
+│                  Backend (Tauri + Rust)                     │
+│  ┌─────────────┐  ┌──────────────┐  ┌──────────────────┐    │
+│  │  Commands   │  │   Services   │  │  Models/Config   │    │
+│  │ (API Layer) │──│ (Bus. Layer) │──│     (Data)       │    │
+│  └─────────────┘  └──────────────┘  └──────────────────┘    │
+└─────────────────────────────────────────────────────────────┘
 ```
 
----
+**Core Design Patterns**
 
-## 文档
+- **SSOT** (Single Source of Truth): All data stored in `~/.cc-switch/cc-switch.db` (SQLite)
+- **Dual-layer Storage**: SQLite for syncable data, JSON for device-level settings
+- **Dual-way Sync**: Write to live files on switch, backfill from live when editing active provider
+- **Atomic Writes**: Temp file + rename pattern prevents config corruption
+- **Concurrency Safe**: Mutex-protected database connection avoids race conditions
+- **Layered Architecture**: Clear separation (Commands → Services → DAO → Database)
 
-- [原 CC Switch 仓库](https://github.com/farion1231/cc-switch)
+**Key Components**
 
----
+- **ProviderService**: Provider CRUD, switching, backfill, sorting
+- **McpService**: MCP server management, import/export, live file sync
+- **ProxyService**: Local proxy mode with hot-switching and format conversion
+- **SessionManager**: Conversation history browsing across supported session sources
+- **ConfigService**: Config import/export, backup rotation
+- **SpeedtestService**: API endpoint latency measurement
 
-## 许可证
+</details>
 
-MIT — 与原项目一致。
+<details>
+<summary><strong>Development Guide</strong></summary>
+
+### Environment Requirements
+
+- Node.js 18+
+- pnpm 8+
+- Rust 1.85+
+- Tauri CLI 2.8+
+
+### Development Commands
+
+```bash
+# Install dependencies
+pnpm install
+
+# Dev mode (hot reload)
+pnpm dev
+
+# Type check
+pnpm typecheck
+
+# Format code
+pnpm format
+
+# Check code format
+pnpm format:check
+
+# Run frontend unit tests
+pnpm test:unit
+
+# Run tests in watch mode (recommended for development)
+pnpm test:unit:watch
+
+# Build application
+pnpm build
+
+# Build debug version
+pnpm tauri build --debug
+```
+
+### Rust Backend Development
+
+```bash
+cd src-tauri
+
+# Format Rust code
+cargo fmt
+
+# Run clippy checks
+cargo clippy
+
+# Run backend tests
+cargo test
+
+# Run specific tests
+cargo test test_name
+
+# Run tests with test-hooks feature
+cargo test --features test-hooks
+```
+
+### Testing Guide
+
+**Frontend Testing**:
+
+- Uses **vitest** as test framework
+- Uses **MSW (Mock Service Worker)** to mock Tauri API calls
+- Uses **@testing-library/react** for component testing
+
+**Running Tests**:
+
+```bash
+# Run all tests
+pnpm test:unit
+
+# Watch mode (auto re-run)
+pnpm test:unit:watch
+
+# With coverage report
+pnpm test:unit --coverage
+```
+
+### Tech Stack
+
+**Frontend**: React 18 · TypeScript · Vite · TailwindCSS 3.4 · TanStack Query v5 · react-i18next · react-hook-form · zod · shadcn/ui · @dnd-kit
+
+**Backend**: Tauri 2.8 · Rust · serde · tokio · thiserror · tauri-plugin-updater/process/dialog/store/log
+
+**Testing**: vitest · MSW · @testing-library/react
+
+</details>
+
+<details>
+<summary><strong>Project Structure</strong></summary>
+
+```
+├── src/                        # Frontend (React + TypeScript)
+│   ├── components/
+│   │   ├── providers/          # Provider management
+│   │   ├── mcp/                # MCP panel
+│   │   ├── prompts/            # Prompts management
+│   │   ├── skills/             # Skills management
+│   │   ├── sessions/           # Session Manager
+│   │   ├── proxy/              # Proxy mode panel
+│   │   ├── openclaw/           # OpenClaw config panels
+│   │   ├── settings/           # Settings (Terminal/Backup/About)
+│   │   ├── deeplink/           # Deep Link import
+│   │   ├── env/                # Environment variable management
+│   │   ├── universal/          # Cross-app configuration
+│   │   ├── usage/              # Usage statistics
+│   │   └── ui/                 # shadcn/ui component library
+│   ├── hooks/                  # Custom hooks (business logic)
+│   ├── lib/
+│   │   ├── api/                # Tauri API wrapper (type-safe)
+│   │   └── query/              # TanStack Query config
+│   ├── locales/                # Translations (zh/zh-TW/en/ja)
+│   ├── config/                 # Presets (providers/mcp)
+│   └── types/                  # TypeScript definitions
+├── src-tauri/                  # Backend (Rust)
+│   └── src/
+│       ├── commands/           # Tauri command layer (by domain)
+│       ├── services/           # Business logic layer
+│       ├── database/           # SQLite DAO layer
+│       ├── proxy/              # Proxy module
+│       ├── session_manager/    # Session management
+│       ├── deeplink/           # Deep Link handling
+│       └── mcp/                # MCP sync module
+├── tests/                      # Frontend tests
+└── assets/                     # Screenshots & partner resources
+```
+
+</details>
+
+## Contributing
+
+Issues and suggestions are welcome!
+
+Before submitting PRs, please ensure:
+
+- Pass type check: `pnpm typecheck`
+- Pass format check: `pnpm format:check`
+- Pass unit tests: `pnpm test:unit`
+
+For new features, please open an issue for discussion before submitting a PR. PRs for features that are not a good fit for the project may be closed.
+
+## Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=farion1231/cc-switch&type=Date)](https://www.star-history.com/#farion1231/cc-switch&Date)
+
+## License
+
+MIT © Jason Young
