@@ -1,5 +1,8 @@
 # CC Switch（增强分支）
 
+> [!NOTE]
+> **本项目已停止维护。** 2026 年 6 月 8 日发布的 [CC Switch v3.16.2](https://github.com/farion1231/cc-switch) 已在整流器中内置了图片整流功能（`media_sanitizer` / `image_rectifier`），覆盖了本项目核心的图片拦截与替换能力。请直接使用 CC Switch 官方版本。
+
 **[CC Switch](https://github.com/farion1231/cc-switch) 的增强分支 — 为 AI CLI 工具新增图片整流器和多 Provider 视觉分析技能。**
 
 ## 为什么需要本项目？
